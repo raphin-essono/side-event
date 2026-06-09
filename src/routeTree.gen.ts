@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as HostRouteImport } from './routes/host'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as HostSearchRouteImport } from './routes/host.search'
+import { Route as HostRegisterRouteImport } from './routes/host.register'
 
 const HostRoute = HostRouteImport.update({
   id: '/host',
@@ -22,31 +24,47 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HostSearchRoute = HostSearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => HostRoute,
+} as any)
+const HostRegisterRoute = HostRegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => HostRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/host': typeof HostRoute
+  '/host': typeof HostRouteWithChildren
+  '/host/register': typeof HostRegisterRoute
+  '/host/search': typeof HostSearchRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/host': typeof HostRoute
+  '/host': typeof HostRouteWithChildren
+  '/host/register': typeof HostRegisterRoute
+  '/host/search': typeof HostSearchRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/host': typeof HostRoute
+  '/host': typeof HostRouteWithChildren
+  '/host/register': typeof HostRegisterRoute
+  '/host/search': typeof HostSearchRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/host'
+  fullPaths: '/' | '/host' | '/host/register' | '/host/search'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/host'
-  id: '__root__' | '/' | '/host'
+  to: '/' | '/host' | '/host/register' | '/host/search'
+  id: '__root__' | '/' | '/host' | '/host/register' | '/host/search'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  HostRoute: typeof HostRoute
+  HostRoute: typeof HostRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +83,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/host/search': {
+      id: '/host/search'
+      path: '/search'
+      fullPath: '/host/search'
+      preLoaderRoute: typeof HostSearchRouteImport
+      parentRoute: typeof HostRoute
+    }
+    '/host/register': {
+      id: '/host/register'
+      path: '/register'
+      fullPath: '/host/register'
+      preLoaderRoute: typeof HostRegisterRouteImport
+      parentRoute: typeof HostRoute
+    }
   }
 }
 
+interface HostRouteChildren {
+  HostRegisterRoute: typeof HostRegisterRoute
+  HostSearchRoute: typeof HostSearchRoute
+}
+
+const HostRouteChildren: HostRouteChildren = {
+  HostRegisterRoute: HostRegisterRoute,
+  HostSearchRoute: HostSearchRoute,
+}
+
+const HostRouteWithChildren = HostRoute._addFileChildren(HostRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  HostRoute: HostRoute,
+  HostRoute: HostRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
