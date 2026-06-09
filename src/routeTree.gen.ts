@@ -13,9 +13,9 @@ import { Route as HostRouteImport } from './routes/host'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MIndexRouteImport } from './routes/m.index'
-import { Route as MIdRouteImport } from './routes/m.$id'
 import { Route as HostSearchRouteImport } from './routes/host.search'
 import { Route as HostRegisterRouteImport } from './routes/host.register'
+import { Route as MIdIndexRouteImport } from './routes/m.$id.index'
 import { Route as MIdVoteStandIdRouteImport } from './routes/m.$id.vote.$standId'
 
 const HostRoute = HostRouteImport.update({
@@ -38,11 +38,6 @@ const MIndexRoute = MIndexRouteImport.update({
   path: '/m/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MIdRoute = MIdRouteImport.update({
-  id: '/m/$id',
-  path: '/m/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const HostSearchRoute = HostSearchRouteImport.update({
   id: '/search',
   path: '/search',
@@ -52,6 +47,11 @@ const HostRegisterRoute = HostRegisterRouteImport.update({
   id: '/register',
   path: '/register',
   getParentRoute: () => HostRoute,
+} as any)
+const MIdIndexRoute = MIdIndexRouteImport.update({
+  id: '/m/$id/',
+  path: '/m/$id/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const MIdVoteStandIdRoute = MIdVoteStandIdRouteImport.update({
   id: '/vote/$standId',
@@ -65,8 +65,8 @@ export interface FileRoutesByFullPath {
   '/host': typeof HostRouteWithChildren
   '/host/register': typeof HostRegisterRoute
   '/host/search': typeof HostSearchRoute
-  '/m/$id': typeof MIdRouteWithChildren
   '/m/': typeof MIndexRoute
+  '/m/$id/': typeof MIdIndexRoute
   '/m/$id/vote/$standId': typeof MIdVoteStandIdRoute
 }
 export interface FileRoutesByTo {
@@ -75,8 +75,8 @@ export interface FileRoutesByTo {
   '/host': typeof HostRouteWithChildren
   '/host/register': typeof HostRegisterRoute
   '/host/search': typeof HostSearchRoute
-  '/m/$id': typeof MIdRouteWithChildren
   '/m': typeof MIndexRoute
+  '/m/$id': typeof MIdIndexRoute
   '/m/$id/vote/$standId': typeof MIdVoteStandIdRoute
 }
 export interface FileRoutesById {
@@ -86,8 +86,8 @@ export interface FileRoutesById {
   '/host': typeof HostRouteWithChildren
   '/host/register': typeof HostRegisterRoute
   '/host/search': typeof HostSearchRoute
-  '/m/$id': typeof MIdRouteWithChildren
   '/m/': typeof MIndexRoute
+  '/m/$id/': typeof MIdIndexRoute
   '/m/$id/vote/$standId': typeof MIdVoteStandIdRoute
 }
 export interface FileRouteTypes {
@@ -98,8 +98,8 @@ export interface FileRouteTypes {
     | '/host'
     | '/host/register'
     | '/host/search'
-    | '/m/$id'
     | '/m/'
+    | '/m/$id/'
     | '/m/$id/vote/$standId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -108,8 +108,8 @@ export interface FileRouteTypes {
     | '/host'
     | '/host/register'
     | '/host/search'
-    | '/m/$id'
     | '/m'
+    | '/m/$id'
     | '/m/$id/vote/$standId'
   id:
     | '__root__'
@@ -118,8 +118,8 @@ export interface FileRouteTypes {
     | '/host'
     | '/host/register'
     | '/host/search'
-    | '/m/$id'
     | '/m/'
+    | '/m/$id/'
     | '/m/$id/vote/$standId'
   fileRoutesById: FileRoutesById
 }
@@ -127,8 +127,8 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   HostRoute: typeof HostRouteWithChildren
-  MIdRoute: typeof MIdRouteWithChildren
   MIndexRoute: typeof MIndexRoute
+  MIdIndexRoute: typeof MIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -161,13 +161,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/m/$id': {
-      id: '/m/$id'
-      path: '/m/$id'
-      fullPath: '/m/$id'
-      preLoaderRoute: typeof MIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/host/search': {
       id: '/host/search'
       path: '/search'
@@ -181,6 +174,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/host/register'
       preLoaderRoute: typeof HostRegisterRouteImport
       parentRoute: typeof HostRoute
+    }
+    '/m/$id/': {
+      id: '/m/$id/'
+      path: '/m/$id'
+      fullPath: '/m/$id/'
+      preLoaderRoute: typeof MIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/m/$id/vote/$standId': {
       id: '/m/$id/vote/$standId'
@@ -204,23 +204,23 @@ const HostRouteChildren: HostRouteChildren = {
 
 const HostRouteWithChildren = HostRoute._addFileChildren(HostRouteChildren)
 
-interface MIdRouteChildren {
-  MIdVoteStandIdRoute: typeof MIdVoteStandIdRoute
-}
-
-const MIdRouteChildren: MIdRouteChildren = {
-  MIdVoteStandIdRoute: MIdVoteStandIdRoute,
-}
-
-const MIdRouteWithChildren = MIdRoute._addFileChildren(MIdRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   HostRoute: HostRouteWithChildren,
-  MIdRoute: MIdRouteWithChildren,
   MIndexRoute: MIndexRoute,
+  MIdIndexRoute: MIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

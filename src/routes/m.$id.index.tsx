@@ -6,7 +6,7 @@ import { Calendar, Grid3x3, Info, LogOut, Lock, CheckCircle2, Star } from "lucid
 
 const search = z.object({ t: z.string().optional(), tab: z.enum(["program", "stands", "info"]).optional() });
 
-export const Route = createFileRoute("/m/$id")({
+export const Route = createFileRoute("/m/$id/")({
   validateSearch: search,
   component: ParticipantSpace,
 });
