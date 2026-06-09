@@ -40,9 +40,9 @@ function RegisterPage() {
             <button onClick={() => setCreated(null)} className="rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90">
               Enregistrer un autre participant
             </button>
-            <Link to={url} className="rounded-xl bg-secondary px-5 py-2.5 text-sm font-medium hover:bg-muted">
+            <a href={url} className="rounded-xl bg-secondary px-5 py-2.5 text-sm font-medium hover:bg-muted">
               Tester l'espace mobile
-            </Link>
+            </a>
           </div>
         </div>
         <aside className="rounded-3xl bg-secondary/60 p-6 ring-1 ring-border text-sm space-y-3">
