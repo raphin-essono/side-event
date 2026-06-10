@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CDC - Plateforme - SING SA - VivaTech</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+<style>
+  :root {
+    --blue-dark:  #1F4E79;
+    --blue-med:   #2E75B6;
+    --blue-light: #BDD7EE;
+    --blue-pale:  #DEEAF1;
+    --accent:     #C55A11;
+    --green-dark: #375623;
+    --green-pale: #E2EFDA;
+    --red-pale:   #FDEDEC;
+    --grey-dark:  #2D2D2D;
+    --grey-med:   #6B6B6B;
+    --grey-light: #F5F5F5;
+    --white:      #FFFFFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: var(--grey-dark);
+    background: #FAFBFC;
+  }
+
+  /* ── COVER ─────────────────────────────────── */
+  .cover {
+    background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-med) 100%);
+    color: var(--white);
+    padding: 60px 80px 48px;
+    page-break-after: always;
+  }
+  .cover-tag { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; opacity: .7; margin-bottom: 18px; }
+  .cover-title { font-size: 34px; font-weight: 700; line-height: 1.2; margin-bottom: 10px; }
+  .cover-sub { font-size: 16px; opacity: .85; margin-bottom: 40px; }
+  .cover-meta { display: flex; gap: 40px; border-top: 1px solid rgba(255,255,255,.25); padding-top: 24px; flex-wrap: wrap; }
+  .cover-meta-item label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; opacity: .6; display: block; }
+  .cover-meta-item span  { font-size: 13px; font-weight: 600; }
+
+  /* ── WRAPPER ────────────────────────────────── */
+  .wrapper { max-width: 960px; margin: 0 auto; padding: 48px 56px; }
+
+  /* ── TOC ────────────────────────────────────── */
+  .toc { background: var(--blue-pale); border-left: 4px solid var(--blue-med); border-radius: 4px; padding: 24px 28px; margin-bottom: 48px; }
+  .toc h2 { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--blue-dark); margin-bottom: 14px; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin: 4px 0; }
+  .toc a { color: var(--blue-dark); text-decoration: none; font-size: 13px; }
+  .toc a:hover { text-decoration: underline; }
+
+  /* ── SECTION HEADERS ────────────────────────── */
+  .section { margin-bottom: 52px; }
+  .section-header {
+    background: var(--blue-dark);
+    color: var(--white);
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 14.5px;
+    font-weight: 700;
+    letter-spacing: .5px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-header .num {
+    background: rgba(255,255,255,.2);
+    border-radius: 50%;
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 800; flex-shrink: 0;
+  }
+  h3 { font-size: 13px; font-weight: 700; color: var(--blue-dark); text-transform: uppercase; letter-spacing: 1px; margin: 28px 0 10px; border-bottom: 2px solid var(--blue-light); padding-bottom: 5px; }
+
+  /* ── PARAGRAPHS ─────────────────────────────── */
+  p { margin-bottom: 12px; font-size: 13.5px; }
+
+  /* ── TABLES ─────────────────────────────────── */
+  .tbl-wrap { overflow-x: auto; margin: 16px 0 28px; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,.08); }
+  table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  thead tr { background: var(--blue-med); color: var(--white); }
+  thead th { padding: 9px 13px; font-weight: 600; text-align: left; }
+  tbody tr:nth-child(even) { background: var(--grey-light); }
+  tbody tr:nth-child(odd)  { background: var(--white); }
+  tbody td { padding: 8px 13px; border-bottom: 1px solid #E8ECF0; vertical-align: top; }
+  .tag {
+    display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600;
+  }
+  .tag-green { background: var(--green-pale); color: var(--green-dark); }
+  .tag-red   { background: var(--red-pale);   color: #C00000; }
+  .tag-blue  { background: var(--blue-pale);  color: var(--blue-dark); }
+  .tag-orange{ background: #FCE4D6; color: var(--accent); }
+
+  /* ── MERMAID ─────────────────────────────────── */
+  .diagram-block {
+    background: var(--white);
+    border: 1px solid var(--blue-light);
+    border-radius: 8px;
+    padding: 24px;
+    margin: 20px 0 32px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.06);
+  }
+  .diagram-block figcaption {
+    text-align: center; font-size: 11.5px; color: var(--grey-med);
+    margin-top: 12px; font-style: italic;
+  }
+  .mermaid { overflow-x: auto; }
+
+  /* ── INFO BOX ────────────────────────────────── */
+  .infobox {
+    border-left: 4px solid var(--blue-med);
+    background: var(--blue-pale);
+    border-radius: 0 6px 6px 0;
+    padding: 14px 18px;
+    margin: 16px 0 24px;
+    font-size: 13px;
+  }
+  .warnbox {
+    border-left: 4px solid var(--accent);
+    background: #FFF6F0;
+    border-radius: 0 6px 6px 0;
+    padding: 14px 18px;
+    margin: 16px 0 24px;
+    font-size: 13px;
+  }
+
+  /* ── PRINT ───────────────────────────────────── */
+  @media print {
+    body { background: white; }
+    .wrapper { padding: 20px 30px; }
+    .diagram-block { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     COVER
+════════════════════════════════════════════ -->
+<div class="cover">
+  <div class="cover-tag">Cahier des charges — Version 1.0</div>
+  <div class="cover-title">Plateforme Événementielle<br>SING SA · VivaTech</div>
+  <div class="cover-sub">Portail participant · Vote des stands · Back-office admin</div>
+  <div class="cover-meta">
+    <div class="cover-meta-item"><label>Projet</label><span>Rencontre interne VivaTech</span></div>
+    <div class="cover-meta-item"><label>Maîtrise d'ouvrage</label><span>SING SA</span></div>
+    <div class="cover-meta-item"><label>Durée estimée</label><span>1 semaine</span></div>
+    <div class="cover-meta-item"><label>Statut</label><span>À valider</span></div>
+  </div>
+</div>
+
+<div class="wrapper">
+
+<!-- ══════════════════════════════════════════
+     TABLE DES MATIÈRES
+════════════════════════════════════════════ -->
+<div class="toc">
+  <h2>Sommaire</h2>
+  <ol>
+    <li><a href="#s1">Contexte et objectifs</a></li>
+    <li><a href="#s2">Rôles utilisateurs</a></li>
+    <li><a href="#s3">Parcours utilisateur (workflow général)</a></li>
+    <li><a href="#s4">Exigences fonctionnelles</a></li>
+    <li><a href="#s5">Exigences non fonctionnelles</a></li>
+    <li><a href="#s6">Architecture technique</a></li>
+    <li><a href="#s7">Planning</a></li>
+  </ol>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     1. CONTEXTE
+════════════════════════════════════════════ -->
+<div class="section" id="s1">
+  <div class="section-header"><span class="num">1</span> Contexte et objectifs</div>
+
+  <p>Dans le cadre de la participation de SING SA à VivaTech, une rencontre interne est organisée autour des acteurs du numérique gabonais. L'événement rassemble plusieurs stands thématiques dont les participants évaluent l'innovation.</p>
+
+  <p>L'objectif est de déployer une <strong>plateforme web événementielle légère, mobile-first</strong>, opérationnelle uniquement pendant l'événement, dans un environnement contrôlé où les participants sont identifiés à l'accueil.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Objectif</th><th>Description</th><th>Priorité</th></tr></thead>
+      <tbody>
+        <tr><td>Portail d'accueil</td><td>Programme, informations générales, liste des stands</td><td><span class="tag tag-blue">Haute</span></td></tr>
+        <tr><td>Vote des stands</td><td>Chaque participant vote pour le stand le plus innovant</td><td><span class="tag tag-blue">Haute</span></td></tr>
+        <tr><td>Vitrine SING SA</td><td>Démonstration du savoir-faire technique de l'équipe</td><td><span class="tag tag-orange">Moyenne</span></td></tr>
+        <tr><td>Statistiques temps réel</td><td>Suivi admin des votes et connexions en direct</td><td><span class="tag tag-blue">Haute</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     2. RÔLES
+════════════════════════════════════════════ -->
+<div class="section" id="s2">
+  <div class="section-header"><span class="num">2</span> Rôles utilisateurs</div>
+
+  <p>La plateforme distingue trois rôles, chacun avec un périmètre d'accès spécifique.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Rôle</th><th>Profil</th><th>Accès principal</th><th>Actions clés</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>Participant</strong></td>
+          <td>Invité enregistré à l'accueil</td>
+          <td>Portail mobile (QR code)</td>
+          <td>Consulter le programme, voter pour les stands</td>
+        </tr>
+        <tr>
+          <td><strong>Hôte / Hôtesse</strong></td>
+          <td>Personnel SING à l'accueil</td>
+          <td>Back-office accueil (tablette)</td>
+          <td>Enregistrer les participants, générer et révoquer les QR codes</td>
+        </tr>
+        <tr>
+          <td><strong>Admin / Organisateur</strong></td>
+          <td>Équipe SING pilotage</td>
+          <td>Back-office admin complet</td>
+          <td>Ouvrir/fermer le vote, suivre les statistiques, gérer les stands</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     3. PARCOURS UTILISATEUR
+════════════════════════════════════════════ -->
+<div class="section" id="s3">
+  <div class="section-header"><span class="num">3</span> Parcours utilisateur (workflow général)</div>
+
+  <h3>3.1 Vue d'ensemble — Flux principal</h3>
+  <p>Le cycle de vie d'une session participant se déroule en quatre temps : enregistrement à l'accueil, scan du QR code, consultation du portail, puis vote pendant la phase ouverte.</p>
+
+  <div class="diagram-block">
+    <div class="mermaid">
+flowchart TD
+    A([Participant arrive]) --> B[Accueil — Hôtesse saisit\nNom · Prénom · Fonction · Email]
+    B --> C[(Base de données\nParticipant créé)]
+    C --> D[Token UUID généré\n+ QR code affiché]
+    D --> E[Participant scanne le QR\navec son smartphone]
+    E --> F{Token valide\n& actif ?}
+    F -- Non --> G[Message d'erreur\n→ se rapprocher accueil]
+    F -- Oui --> H[Session créée\nToken marqué utilisé]
+    H --> I[Portail participant\nProgramme + Infos stands]
+    I --> J{Phase de vote\nouverte ?}
+    J -- Non --> K[Stands visibles\nmais vote désactivé]
+    J -- Oui --> L[Participant vote\npour 1 ou N stands]
+    L --> M{A déjà voté\npour ce stand ?}
+    M -- Oui --> N[Message : vote déjà enregistré]
+    M -- Non --> O[Vote enregistré\nIcone ✓ Voté]
+    K -.-> J
+
+    style A fill:#1F4E79,color:#fff,stroke:none
+    style O fill:#375623,color:#fff,stroke:none
+    style G fill:#C00000,color:#fff,stroke:none
+    style N fill:#C55A11,color:#fff,stroke:none
+    </div>
+    <figcaption>Fig. 1 — Flux principal : enregistrement, connexion et vote du participant</figcaption>
+  </div>
+
+  <h3>3.2 Gestion des cas d'urgence (perte d'accès)</h3>
+  <p>Si un participant perd l'accès à sa session (fermeture d'onglet, changement de téléphone, expiration), il se présente à l'accueil. L'hôte révoque les anciens tokens et génère un nouveau QR code lié au même compte — les votes déjà saisis sont conservés.</p>
+
+  <div class="diagram-block">
+    <div class="mermaid">
+sequenceDiagram
+    actor P as Participant
+    actor H as Hôtesse
+    participant BO as Back-office
+    participant DB as Base de données
+
+    P->>H: "J'ai perdu l'accès" (donne nom ou ID)
+    H->>BO: Recherche du participant
+    BO->>DB: Récupère fiche + tokens
+    DB-->>BO: Fiche + anciens tokens
+    H->>BO: Clique "Nouveau QR"
+    BO->>DB: Révoque tous les tokens existants
+    BO->>DB: Crée nouveau token UUID
+    DB-->>BO: Token créé
+    BO-->>H: Affiche nouveau QR code
+    H-->>P: Présente le QR
+    P->>BO: Scanne le QR
+    BO->>DB: Valide token & ouvre session
+    DB-->>BO: Session créée (votes conservés)
+    BO-->>P: Portail rétabli avec historique
+    </div>
+    <figcaption>Fig. 2 — Séquence de régénération de QR code en cas de perte d'accès</figcaption>
+  </div>
+
+  <h3>3.3 Pilotage admin de la phase de vote</h3>
+  <p>L'administrateur contrôle l'ouverture du vote depuis son panneau. L'action est globale (tous les stands simultanément) ou ciblée stand par stand, avec effet immédiat sur le portail participant.</p>
+
+  <div class="diagram-block">
+    <div class="mermaid">
+stateDiagram-v2
+    [*] --> VoteFermé : Démarrage plateforme
+
+    VoteFermé --> VoteOuvert : Admin ouvre le vote (global ou par stand)
+    VoteOuvert --> VoteFermé : Admin ferme le vote
+
+    state VoteOuvert {
+        [*] --> EnAttente
+        EnAttente --> Voté : Participant valide son vote
+        Voté --> [*]
+    }
+
+    VoteFermé --> Clôturé : Admin clôture définitivement
+    VoteOuvert --> Clôturé : Admin clôture définitivement
+    Clôturé --> [*]
+    </div>
+    <figcaption>Fig. 3 — États de la phase de vote (machine à états)</figcaption>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     4. EXIGENCES FONCTIONNELLES
+════════════════════════════════════════════ -->
+<div class="section" id="s4">
+  <div class="section-header"><span class="num">4</span> Exigences fonctionnelles</div>
+
+  <h3>4.1 Enregistrement des participants</h3>
+  <p>L'hôtesse dispose d'un formulaire optimisé tablette. À la validation, le système enregistre immédiatement le participant, génère un token UUID non devinable et affiche le QR code encodant l'URL <code>https://…/login?token=…</code>.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Champ</th><th>Type</th><th>Obligatoire</th><th>Note</th></tr></thead>
+      <tbody>
+        <tr><td>Nom</td><td>Texte</td><td><span class="tag tag-green">Oui</span></td><td>—</td></tr>
+        <tr><td>Prénom</td><td>Texte</td><td><span class="tag tag-green">Oui</span></td><td>—</td></tr>
+        <tr><td>Fonction / Organisation</td><td>Texte</td><td><span class="tag tag-green">Oui</span></td><td>—</td></tr>
+        <tr><td>Email</td><td>Email</td><td><span class="tag tag-green">Oui</span></td><td>Unicité vérifiée</td></tr>
+        <tr><td>Hôte enregistreur</td><td>Référence</td><td><span class="tag tag-orange">Optionnel</span></td><td>Pour audit</td></tr>
+        <tr><td>Horodatage</td><td>DateTime</td><td><span class="tag tag-green">Auto</span></td><td>Généré serveur</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>4.2 Gestion des QR codes et tokens</h3>
+  <p>Chaque token est unique, lié à un participant, et passe par un cycle de vie précis : <em>actif → utilisé</em> à la première connexion, ou <em>révoqué</em> en cas de réémission. Un participant ne peut avoir qu'un seul token actif à la fois.</p>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>État du token</th><th>Description</th><th>Connexion autorisée</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag tag-green">Actif</span></td><td>Généré, non encore scanné</td><td>Oui</td></tr>
+        <tr><td><span class="tag tag-orange">Utilisé</span></td><td>Scanné une fois, session créée</td><td>Non (session existante)</td></tr>
+        <tr><td><span class="tag tag-red">Révoqué</span></td><td>Invalidé lors d'une réémission</td><td>Non</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>4.3 Vote — Règles métier</h3>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Règle</th><th>Comportement attendu</th></tr></thead>
+      <tbody>
+        <tr><td>Un vote par participant par stand</td><td>Après validation, le bouton passe en état "Voté" ; aucune modification possible</td></tr>
+        <tr><td>Vote conditionné à l'ouverture</td><td>Le bouton de vote est masqué ou désactivé si le vote est fermé pour ce stand</td></tr>
+        <tr><td>Confirmation obligatoire</td><td>Message "Votre vote a été pris en compte" affiché après validation</td></tr>
+        <tr><td>Formulaire minimal</td><td>Note globale 1–5 obligatoire ; critères optionnels (Innovation, Clarté, Impact) ; commentaire libre facultatif</td></tr>
+        <tr><td>Intégrité côté serveur</td><td>Toute tentative de double vote est rejetée à l'API, indépendamment du front</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>4.4 Back-office admin — Fonctionnalités</h3>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Module</th><th>Fonctionnalités</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Gestion des stands</strong></td><td>Créer, modifier, supprimer un stand (nom, logo, description, ordre d'affichage)</td></tr>
+        <tr><td><strong>Programme</strong></td><td>Créer et modifier les créneaux horaires, marquer la session en cours</td></tr>
+        <tr><td><strong>Pilotage du vote</strong></td><td>Ouvrir / fermer globalement ou par stand ; effet immédiat sur le portail</td></tr>
+        <tr><td><strong>Statistiques</strong></td><td>Participants enregistrés, connexions actives, votes totaux, note moyenne par stand — temps réel</td></tr>
+        <tr><td><strong>Export</strong></td><td>CSV / Excel : ID stand, nom, nombre de votes, moyenne des notes, détail anonymisé optionnel</td></tr>
+        <tr><td><strong>Gestion d'urgence</strong></td><td>Recherche participant, révocation + réémission de QR code</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     5. EXIGENCES NON FONCTIONNELLES
+════════════════════════════════════════════ -->
+<div class="section" id="s5">
+  <div class="section-header"><span class="num">5</span> Exigences non fonctionnelles</div>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Critère</th><th>Exigence</th><th>Mesure / Cible</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Performance</strong></td><td>Connexions simultanées de l'ensemble des participants</td><td>Chargement &lt; 2–3 s dans des conditions réseau normales</td></tr>
+        <tr><td><strong>Compatibilité</strong></td><td>Interface mobile-first adaptée smartphones et tablettes</td><td>Chrome, Safari, Edge — Android 8+ / iOS 14+</td></tr>
+        <tr><td><strong>Simplicité UX</strong></td><td>Nombre minimal de clics pour accéder au programme ou voter</td><td>≤ 2 clics depuis la page d'accueil</td></tr>
+        <tr><td><strong>Sécurité des accès</strong></td><td>Authentification back-office par login/mot de passe</td><td>Sessions back-office distinctes du portail participant</td></tr>
+        <tr><td><strong>Chiffrement</strong></td><td>Tout échange en HTTPS / TLS</td><td>Certificat SSL valide obligatoire</td></tr>
+        <tr><td><strong>Protection des données</strong></td><td>Données personnelles limitées au nécessaire ; durée de conservation courte</td><td>Suppression ou anonymisation après bilan événement</td></tr>
+        <tr><td><strong>Session participant</strong></td><td>Expiration configurable après inactivité</td><td>Défaut : 2 h ; message d'invite à l'accueil en cas d'expiration</td></tr>
+        <tr><td><strong>Disponibilité</strong></td><td>Monitoring basique durant l'événement</td><td>Logs d'accès + alertes erreurs</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="warnbox">
+    <strong>Données personnelles :</strong> les participants doivent être informés de la finalité de collecte (gestion événement + vote). Les QR codes, liés à une identité, sont traités comme données personnelles et soumis aux mêmes règles (tokens sécurisés, révocation, durée de conservation limitée).
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     6. ARCHITECTURE TECHNIQUE
+════════════════════════════════════════════ -->
+<div class="section" id="s6">
+  <div class="section-header"><span class="num">6</span> Architecture technique</div>
+
+  <h3>6.1 Vue d'ensemble</h3>
+
+  <div class="diagram-block">
+    <div class="mermaid">
+graph TB
+    subgraph Client["Clients (HTTPS)"]
+        M[📱 Smartphone Participant\nPortail mobile]
+        T[💻 Tablette Hôtesse\nBack-office accueil]
+        A[🖥️ PC Admin\nBack-office admin]
+    end
+
+    subgraph Frontend["Front-end — React / Vue.js + Tailwind"]
+        P[Portail Participant\nProgramme · Stands · Vote]
+        BO[Back-office\nAccueil + Admin]
+    end
+
+    subgraph Backend["Back-end — Node.js (NestJS / Express)"]
+        API[API REST]
+        QR[Module QR\nGénération tokens]
+        VOTE[Module Vote\nRègles métier]
+        STATS[Module Stats\nTemps réel]
+    end
+
+    subgraph DB["Base de données — PostgreSQL"]
+        direction LR
+        T1[(participants)]
+        T2[(tokens)]
+        T3[(stands)]
+        T4[(votes)]
+        T5[(events/phases)]
+    end
+
+    subgraph Infra["Infrastructure SING SA"]
+        SERV[Serveur OVH / Cloud\nDocker + SSL/TLS]
+        LOGS[Logs & Monitoring]
+    end
+
+    M --> P
+    T --> BO
+    A --> BO
+    P --> API
+    BO --> API
+    API --> QR & VOTE & STATS
+    QR & VOTE & STATS --> T1 & T2 & T3 & T4 & T5
+    Backend --> SERV
+    SERV --> LOGS
+
+    style Client fill:#DEEAF1,stroke:#2E75B6
+    style Frontend fill:#E2EFDA,stroke:#375623
+    style Backend fill:#FCE4D6,stroke:#C55A11
+    style DB fill:#F5F5F5,stroke:#808080
+    style Infra fill:#1F4E79,color:#fff,stroke:none
+    </div>
+    <figcaption>Fig. 4 — Architecture technique globale de la plateforme</figcaption>
+  </div>
+
+  <h3>6.2 Choix technologiques</h3>
+
+  <div class="tbl-wrap">
+    <table>
+      <thead><tr><th>Couche</th><th>Technologie recommandée</th><th>Justification</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Front-end</strong></td><td>React ou Vue.js + Tailwind CSS</td><td>Développement rapide, responsive, maîtrisé par l'équipe SING</td></tr>
+        <tr><td><strong>Back-end</strong></td><td>Node.js — NestJS ou Express</td><td>Cohérence avec la stack SING ; API REST légère et maintenable</td></tr>
+        <tr><td><strong>Base de données</strong></td><td>PostgreSQL</td><td>Jointures participants/votes/stands ; fiabilité transactionnelle</td></tr>
+        <tr><td><strong>Génération QR</strong></td><td>Bibliothèque <code>qrcode</code> (Node.js)</td><td>Légère, open source, génération serveur ou client</td></tr>
+        <tr><td><strong>Hébergement</strong></td><td>Infrastructure SING SA ou cloud maîtrisé</td><td>Certificat SSL/TLS obligatoire ; accès contrôlé</td></tr>
+        <tr><td><strong>Déploiement</strong></td><td>Docker + pipeline CI/CD léger</td><td>Reproductibilité, rollback facile en cas d'incident</td></tr>
+        <tr><td><strong>Monitoring</strong></td><td>Logs applicatifs + outil basique (ex. UptimeRobot)</td><td>Alertes en cas de panne pendant l'événement</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>6.3 Modèle de données simplifié</h3>
+
+  <div class="diagram-block">
+    <div class="mermaid">
+erDiagram
+    PARTICIPANT {
+        uuid id PK
+        string nom
+        string prenom
+        string fonction
+        string email
+        datetime created_at
+        string hote_id FK
+    }
+    TOKEN {
+        uuid id PK
+        uuid participant_id FK
+        string statut "actif | utilisé | révoqué"
+        datetime created_at
+        datetime used_at
+    }
+    STAND {
+        uuid id PK
+        string nom
+        string description
+        string logo_url
+        int ordre
+        string statut_vote "fermé | ouvert"
+    }
+    VOTE {
+        uuid id PK
+        uuid participant_id FK
+        uuid stand_id FK
+        int note_globale
+        json criteres
+        text commentaire
+        datetime voted_at
+    }
+    PHASE {
+        uuid id PK
+        string titre
+        datetime debut
+        datetime fin
+        boolean en_cours
+    }
+
+    PARTICIPANT ||--o{ TOKEN : "possède"
+    PARTICIPANT ||--o{ VOTE : "émet"
+    STAND ||--o{ VOTE : "reçoit"
+    </div>
+    <figcaption>Fig. 5 — Modèle entité-relation de la base de données</figcaption>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     7. PLANNING
+════════════════════════════════════════════ -->
+<div class="section" id="s7">
+  <div class="section-header"><span class="num">7</span> Planning indicatif (1 semaine)</div>
+
+  <div class="diagram-block">
+    <div class="mermaid">
+gantt
+    title Planning de réalisation — Plateforme VivaTech
+    dateFormat  YYYY-MM-DD
+    axisFormat  Jour. %W
+
+    section Jour 1 — Cadrage
+    Validation CDC & maquettes Figma          :done, s1a, 2025-06-09, 3d
+    Architecture technique & setup repo       :done, s1b, 2025-06-09, 3d
+    Wireframes écrans principaux              :done, s1c, 2025-06-11, 2d
+
+    section Jour 2–3 — Développement
+    API REST (participants, tokens, stands)    :active, s2a, 2025-06-16, 7d
+    Module vote (règles métier + stats)        :s2b, 2025-06-18, 6d
+    Portail participant (front mobile)         :s2c, 2025-06-16, 7d
+    Back-office accueil & admin               :s2d, 2025-06-18, 8d
+    Intégration génération QR code            :s2e, 2025-06-23, 3d
+
+    section Jour 4 — Tests & Production
+    Tests fonctionnels & compatibilité mobile  :s4a, 2025-06-30, 3d
+    Corrections & ajustements                 :s4b, 2025-07-02, 2d
+    Déploiement production (SSL, Docker)      :s4c, 2025-07-04, 1d
+    Formation hôtes & admins                  :s4d, 2025-07-04, 1d
+
+    section Avant événement
+    Tests avec participants internes          :crit, se1, 2025-07-07, 2d
+    Go/No-Go final                            :milestone, m1, 2025-07-09, 0d
+    </div>
+    <figcaption>Fig. 6 — Gantt prévisionnel sur 1 semaine</figcaption>
+  </div>
+</div>
+</div><!-- /wrapper -->
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      primaryColor:      '#DEEAF1',
+      primaryTextColor:  '#2D2D2D',
+      primaryBorderColor:'#2E75B6',
+      lineColor:         '#2E75B6',
+      secondaryColor:    '#E2EFDA',
+      tertiaryColor:     '#FCE4D6',
+      fontFamily:        'Segoe UI, Arial, sans-serif',
+      fontSize:          '13px',
+    },
+    flowchart: { curve: 'basis', padding: 20 },
+    sequence:  { actorMargin: 60, messageMargin: 30, mirrorActors: false },
+    gantt:     { barHeight: 22, barGap: 6, topPadding: 50, leftPadding: 180 },
+    er:        { layoutDirection: 'LR', minEntityWidth: 100 },
+  });
+</script>
+</body>
+</html>
