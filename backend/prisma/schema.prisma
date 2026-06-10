@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TokenStatus {
+  ACTIF
+  UTILISE
+  REVOQUE
+}
+
+enum VotePhaseStatus {
+  FERME
+  OUVERT
+}
+
+enum StaffRole {
+  HOST
+  ADMIN
+}
+
+model StaffUser {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  role         StaffRole
+  nom          String?
+  createdAt    DateTime @default(now())
+
+  registeredParticipants Participant[] @relation("RegisteredBy")
+}
+
+model Participant {
+  id        String   @id @default(uuid())
+  nom       String
+  prenom    String
+  fonction  String
+  email     String   @unique
+  createdAt DateTime @default(now())
+  hoteId    String?
+  hote      StaffUser? @relation("RegisteredBy", fields: [hoteId], references: [id])
+
+  tokens Token[]
+  votes  Vote[]
+}
+
+model Token {
+  id            String      @id @default(uuid())
+  participantId String
+  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  statut        TokenStatus @default(ACTIF)
+  createdAt     DateTime    @default(now())
+  usedAt        DateTime?
+
+  @@index([participantId, statut])
+}
+
+model Stand {
+  id          String          @id @default(uuid())
+  nom         String
+  description String
+  tagline     String?
+  logoUrl     String?
+  color       String?
+  initials    String?
+  ordre       Int             @default(0)
+  statutVote  VotePhaseStatus @default(FERME)
+
+  votes Vote[]
+}
+
+model Vote {
+  id            String   @id @default(uuid())
+  participantId String
+  standId       String
+  noteGlobale   Int
+  criteres      Json?
+  commentaire   String?
+  votedAt       DateTime @default(now())
+
+  participant Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  stand       Stand       @relation(fields: [standId], references: [id], onDelete: Cascade)
+
+  @@unique([participantId, standId])
+}
+
+model Phase {
+  id       String   @id @default(uuid())
+  titre    String
+  horaire  String
+  salle    String?
+  debut    DateTime?
+  fin      DateTime?
+  enCours  Boolean  @default(false)
+  ordre    Int      @default(0)
+}
+
+model EventSettings {
+  id             Int             @id @default(1)
+  voteOpenGlobal Boolean         @default(false)
+  votePhase      VotePhaseStatus @default(FERME)
+}
