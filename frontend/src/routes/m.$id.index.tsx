@@ -36,6 +36,7 @@ function ParticipantSpace() {
           <div>
             <div className="text-xs uppercase tracking-widest opacity-80">Bonjour</div>
             <div className="text-xl font-bold">{participant.firstName} {participant.lastName}</div>
+            <div className="text-sm text-muted-foreground mt-0.5">{participant.role}</div>
             <div className="text-xs opacity-80 font-mono mt-0.5">ID · {participant.id}</div>
           </div>
           <Link to="/" className="rounded-full bg-white/10 p-2 hover:bg-white/20"><LogOut className="h-4 w-4" /></Link>
