@@ -1,0 +1,188 @@
+@import "tailwindcss";
+
+/* ── Design tokens — palette élégante SING ──────────────
+   #FDFCFE blanc nacré · #E9F7F0 menthe · #CEDED5 sauge · #A8667B mauve
+──────────────────────────────────────────────────────── */
+:root {
+  --background: #fdfcfe;
+  --card: #ffffff;
+  --foreground: #2b2530;
+  --muted: #7a737f;
+  --border: #e3ebe6;
+
+  --primary: #a8667b;
+  --primary-light: #bc7f92;
+  --primary-pale: #f4e9ed;
+  --accent: #5e8370;
+  --accent-pale: #ceded5;
+  --success: #46765f;
+  --success-pale: #e9f7f0;
+  --danger: #b3445a;
+  --danger-pale: #f8e8ec;
+
+  --gradient-hero: linear-gradient(135deg, #9a5a6f 0%, #b97f93 100%);
+  --shadow-soft: 0 1px 2px rgb(43 37 48 / 0.05), 0 3px 10px rgb(43 37 48 / 0.04);
+  --shadow-lift: 0 4px 12px rgb(43 37 48 / 0.08), 0 12px 32px rgb(43 37 48 / 0.07);
+}
+
+:root[data-theme="dark"] {
+  --background: #17141a;
+  --card: #201c25;
+  --foreground: #efeaf1;
+  --muted: #9e94a5;
+  --border: #322c39;
+
+  --primary: #c68fa1;
+  --primary-light: #d6a8b7;
+  --primary-pale: #322329;
+  --accent: #9dbfae;
+  --accent-pale: #222e28;
+  --success: #8fbca6;
+  --success-pale: #1e2b25;
+  --danger: #e08097;
+  --danger-pale: #342026;
+
+  --gradient-hero: linear-gradient(135deg, #4a3340 0%, #a8667b 100%);
+  --shadow-soft: 0 1px 3px rgb(0 0 0 / 0.35);
+  --shadow-lift: 0 8px 28px rgb(0 0 0 / 0.45);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-primary-pale: var(--primary-pale);
+  --color-accent: var(--accent);
+  --color-accent-pale: var(--accent-pale);
+  --color-success: var(--success);
+  --color-success-pale: var(--success-pale);
+  --color-danger: var(--danger);
+  --color-danger-pale: var(--danger-pale);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3 {
+  letter-spacing: -0.015em;
+}
+
+/* ── Composants réutilisables ───────────────────────── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.875rem;
+  box-shadow: var(--shadow-soft);
+}
+
+.input {
+  width: 100%;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--foreground);
+  padding: 0.625rem 0.875rem;
+  border-radius: 0.625rem;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent);
+}
+.input::placeholder { color: var(--muted); }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 0.625rem;
+  padding: 0.625rem 1.125rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.btn-accent { background: var(--accent); }
+.btn-outline {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--border);
+}
+.btn-outline:hover { background: var(--primary-pale); filter: none; }
+.btn-danger { background: var(--danger); }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border-radius: 999px;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.badge-open { background: var(--success-pale); color: var(--success); }
+.badge-closed { background: var(--danger-pale); color: var(--danger); }
+.badge-neutral { background: var(--accent-pale); color: var(--accent); }
+.badge-accent { background: var(--primary-pale); color: var(--primary); }
+
+.text-muted { color: var(--muted); }
+
+/* ── Overline — étiquette typographique élégante ────── */
+.overline {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--primary);
+}
+
+/* ── Onglets ────────────────────────────────────────── */
+.tab {
+  padding: 0.5rem 1rem;
+  border-radius: 0.625rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  transition: background 0.15s, color 0.15s;
+}
+.tab:hover { color: var(--foreground); }
+.tab[data-active="true"] {
+  background: var(--primary-pale);
+  color: var(--primary);
+}
+
+/* ── Étoiles de notation (glyphes typographiques) ───── */
+.star {
+  font-size: 1.9rem;
+  line-height: 1;
+  color: var(--border);
+  cursor: pointer;
+  transition: color 0.12s, transform 0.12s;
+  background: none;
+  border: none;
+  padding: 0.1rem;
+}
+.star[data-active="true"] { color: var(--primary); }
+.star:hover { transform: scale(1.12); }
