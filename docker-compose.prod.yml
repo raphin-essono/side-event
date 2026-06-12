@@ -18,7 +18,7 @@ services:
     image: ${DOCKERHUB_USERNAME}/side-event:latest
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "127.0.0.1:13003:3000"
     environment:
       DATABASE_URL: "postgresql://sing:${POSTGRES_PASSWORD}@db:5432/vivatech?schema=public"
       SESSION_SECRET: ${SESSION_SECRET}
