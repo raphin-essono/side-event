@@ -81,7 +81,7 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.PRIVATE_KEY }}
           passphrase: ${{ secrets.PASSPHRASE_PRIVATE_KEY }}
-          port: 22
+          port: ${{ secrets.PORT }}
           script: |
             set -e
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/side-event:latest
