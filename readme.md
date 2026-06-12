@@ -1,4 +1,4 @@
-# SING · VivaTech — Plateforme événementielle
+# SING · VivaTech — Evenement
 
 Monorepo pour la plateforme décrite dans le [cahier des charges](./documentation/index.html).
 
