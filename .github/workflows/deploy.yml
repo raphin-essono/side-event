@@ -89,6 +89,34 @@ jobs:
           source: docker-compose.yml
           target: ${{ env.DEPLOY_DIR }}
 
+      # Valide les secrets sur le runner (bash) avant SSH — message clair si un secret manque
+      - name: Validate deploy secrets
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+          ADMIN_EMAIL: ${{ secrets.ADMIN_EMAIL }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
+          HOST_EMAIL: ${{ secrets.HOST_EMAIL }}
+          HOST_PASSWORD: ${{ secrets.HOST_PASSWORD }}
+          IP_SERVER: ${{ secrets.IP_SERVER }}
+          SSH_USER: ${{ secrets.USER }}
+          PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+          PORT: ${{ secrets.PORT }}
+        run: |
+          set -e
+          missing=0
+          for var in DOCKERHUB_USERNAME DOCKERHUB_TOKEN POSTGRES_PASSWORD SESSION_SECRET \
+                     ADMIN_EMAIL ADMIN_PASSWORD HOST_EMAIL HOST_PASSWORD \
+                     IP_SERVER SSH_USER PRIVATE_KEY PORT; do
+            if [ -z "${!var}" ]; then
+              echo "::error::GitHub secret $var is missing or empty"
+              missing=1
+            fi
+          done
+          [ "$missing" -eq 0 ] || exit 1
+
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1
         env:
@@ -107,27 +135,31 @@ jobs:
           passphrase: ${{ secrets.PASSPHRASE_PRIVATE_KEY }}
           port: ${{ secrets.PORT }}
           envs: DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,POSTGRES_PASSWORD,SESSION_SECRET,ADMIN_EMAIL,ADMIN_PASSWORD,HOST_EMAIL,HOST_PASSWORD
+          script_stop: true
           script: |
             set -e
             mkdir -p ~/side-event
 
-            for var in DOCKERHUB_USERNAME POSTGRES_PASSWORD SESSION_SECRET ADMIN_EMAIL ADMIN_PASSWORD HOST_EMAIL HOST_PASSWORD; do
-              if [ -z "${!var}" ]; then
-                echo "ERROR: GitHub secret $var is missing or empty."
-                exit 1
-              fi
-            done
+            # Vérifications directes (pas de ${!var} — incompatible avec /bin/sh distant)
+            test -n "$DOCKERHUB_USERNAME" || { echo "ERROR: DOCKERHUB_USERNAME not forwarded"; exit 1; }
+            test -n "$DOCKERHUB_TOKEN"      || { echo "ERROR: DOCKERHUB_TOKEN not forwarded"; exit 1; }
+            test -n "$POSTGRES_PASSWORD"    || { echo "ERROR: POSTGRES_PASSWORD not forwarded"; exit 1; }
+            test -n "$SESSION_SECRET"       || { echo "ERROR: SESSION_SECRET not forwarded"; exit 1; }
+            test -n "$ADMIN_EMAIL"          || { echo "ERROR: ADMIN_EMAIL not forwarded"; exit 1; }
+            test -n "$ADMIN_PASSWORD"       || { echo "ERROR: ADMIN_PASSWORD not forwarded"; exit 1; }
+            test -n "$HOST_EMAIL"           || { echo "ERROR: HOST_EMAIL not forwarded"; exit 1; }
+            test -n "$HOST_PASSWORD"        || { echo "ERROR: HOST_PASSWORD not forwarded"; exit 1; }
 
             umask 077
-            cat > ~/side-event/.env <<EOF
-            DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME}
-            POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-            SESSION_SECRET=${SESSION_SECRET}
-            ADMIN_EMAIL=${ADMIN_EMAIL}
-            ADMIN_PASSWORD=${ADMIN_PASSWORD}
-            HOST_EMAIL=${HOST_EMAIL}
-            HOST_PASSWORD=${HOST_PASSWORD}
-            EOF
+            printf '%s\n' \
+              "DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME}" \
+              "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}" \
+              "SESSION_SECRET=${SESSION_SECRET}" \
+              "ADMIN_EMAIL=${ADMIN_EMAIL}" \
+              "ADMIN_PASSWORD=${ADMIN_PASSWORD}" \
+              "HOST_EMAIL=${HOST_EMAIL}" \
+              "HOST_PASSWORD=${HOST_PASSWORD}" \
+              > ~/side-event/.env
             chmod 600 ~/side-event/.env
 
             echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
