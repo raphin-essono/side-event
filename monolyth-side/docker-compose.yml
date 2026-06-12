@@ -22,6 +22,8 @@ services:
     environment:
       DATABASE_URL: "postgresql://sing:sing_dev@db:5432/vivatech?schema=public"
       SESSION_SECRET: "change-me-in-production"
+    # Synchronise le schéma Prisma au démarrage puis lance l'app
+    command: sh -c "npx prisma db push --skip-generate && node node_modules/next/dist/bin/next start"
     depends_on:
       db:
         condition: service_healthy

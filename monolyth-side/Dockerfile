@@ -9,7 +9,7 @@ COPY package*.json ./
 RUN npm ci
 
 # Sources — les secrets (.env*) et la base SQLite locale sont exclus
-# via .dockerignore, ils ne doivent JAMAIS entrer dans l'image
+# via .dockerignore
 COPY . .
 
 RUN npx prisma generate

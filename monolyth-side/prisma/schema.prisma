@@ -2,10 +2,9 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// Dev : SQLite (fichier local, aucune dépendance).
-// Production : remplacer provider par "postgresql" et DATABASE_URL par l'URL Postgres.
+// PostgreSQL en dev (via docker compose) comme en production.
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

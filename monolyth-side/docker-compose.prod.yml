@@ -1,15 +1,3 @@
-# Modèle de déploiement serveur — à copier sur le serveur :
-#   /srv/side-event/docker-compose.yml  (+ un fichier .env à côté)
-#
-# Prérequis :
-#  - `docker login` fait une fois sur le serveur (image privée)
-#  - prisma/schema.prisma : provider = "postgresql" pour la production
-#
-# .env attendu sur le serveur :
-#   DOCKERHUB_USERNAME=ingriddigitech
-#   POSTGRES_PASSWORD=<mot-de-passe-fort>
-#   SESSION_SECRET=<secret-aléatoire-fort>
-
 services:
   db:
     image: postgres:16-alpine
