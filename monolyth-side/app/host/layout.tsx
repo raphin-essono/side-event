@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import Navbar from "../components/Navbar";
 import HostTabs from "./HostTabs";
@@ -6,7 +5,7 @@ import { getStaffSession } from "@/lib/auth";
 
 export default async function HostLayout({ children }: { children: React.ReactNode }) {
   const staff = await getStaffSession();
-  if (!staff) redirect("/login?next=/host/register");
+  if (!staff) redirect("/login?next=/host/welcome");
 
   return (
     <div className="min-h-screen">

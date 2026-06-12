@@ -17,7 +17,7 @@ type Props = { searchParams: Promise<{ p?: string }> };
 export default async function AdminPage({ searchParams }: Props) {
   const staff = await getStaffSession();
   if (!staff) redirect("/login?next=/admin");
-  if (staff.role !== "ADMIN") redirect("/host/register");
+  if (staff.role !== "ADMIN") redirect("/host/welcome");
 
   const { p } = await searchParams;
   const page = Math.max(1, Number(p ?? 1) || 1);

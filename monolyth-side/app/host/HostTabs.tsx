@@ -3,7 +3,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const tabs = [
-  { href: "/host/register", label: "Enregistrer" },
+  { href: "/host/welcome", label: "QR d'accueil" },
+  { href: "/host/register", label: "Saisie manuelle" },
   { href: "/host/search", label: "Rechercher" },
 ];
 

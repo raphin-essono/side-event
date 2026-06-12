@@ -24,13 +24,13 @@ export default function Home() {
 
         <div className="mt-12 grid gap-5 md:grid-cols-3">
           <Link
-            href="/host/register"
+            href="/host/welcome"
             className="card group p-6 transition hover:-translate-y-0.5 hover:[box-shadow:var(--shadow-lift)]"
           >
             <span className="overline">Accueil · tablette</span>
             <h2 className="mt-3 text-lg font-semibold">Hôte / Hôtesse</h2>
             <p className="mt-1.5 text-sm text-muted">
-              Enregistrer les participants à l&apos;accueil et générer leur QR code.
+              Afficher le QR d&apos;inscription dynamique et gérer les accès participants.
             </p>
             <span className="mt-5 inline-block text-sm font-semibold text-primary group-hover:underline">
               Ouvrir →

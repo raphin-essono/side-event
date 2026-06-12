@@ -1,0 +1,44 @@
+# Modèle de déploiement serveur — à copier sur le serveur :
+#   /srv/side-event/docker-compose.yml  (+ un fichier .env à côté)
+#
+# Prérequis :
+#  - `docker login` fait une fois sur le serveur (image privée)
+#  - prisma/schema.prisma : provider = "postgresql" pour la production
+#
+# .env attendu sur le serveur :
+#   DOCKERHUB_USERNAME=ingriddigitech
+#   POSTGRES_PASSWORD=<mot-de-passe-fort>
+#   SESSION_SECRET=<secret-aléatoire-fort>
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sing
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: vivatech
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sing -d vivatech"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    image: ${DOCKERHUB_USERNAME}/side-event:latest
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: "postgresql://sing:${POSTGRES_PASSWORD}@db:5432/vivatech?schema=public"
+      SESSION_SECRET: ${SESSION_SECRET}
+    # Synchronise le schéma Prisma au démarrage puis lance l'app
+    command: sh -c "npx prisma db push --skip-generate && node node_modules/next/dist/bin/next start"
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  db_data:

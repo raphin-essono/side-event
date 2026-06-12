@@ -10,9 +10,10 @@ datasource db {
 }
 
 // Valeurs de statut (String pour compatibilité SQLite + Postgres) :
-// Token.statut      : ACTIF | UTILISE | REVOQUE
-// Stand.statutVote  : FERME | OUVERT
-// StaffUser.role    : HOST | ADMIN
+// Token.statut             : ACTIF | UTILISE | REVOQUE
+// Stand.statutVote         : FERME | OUVERT
+// StaffUser.role           : HOST | ADMIN
+// RegistrationCode.statut  : ACTIF | SCANNE | UTILISE | EXPIRE
 
 model StaffUser {
   id           String   @id @default(uuid())
@@ -48,6 +49,18 @@ model Token {
   usedAt        DateTime?
 
   @@index([participantId, statut])
+}
+
+// QR d'enregistrement dynamique affiché à l'accueil : usage unique,
+// consommé au scan (ACTIF → SCANNE) puis à l'inscription (→ UTILISE).
+model RegistrationCode {
+  id            String    @id @default(uuid())
+  statut        String    @default("ACTIF")
+  createdAt     DateTime  @default(now())
+  scannedAt     DateTime?
+  participantId String?
+
+  @@index([statut, createdAt])
 }
 
 model Stand {

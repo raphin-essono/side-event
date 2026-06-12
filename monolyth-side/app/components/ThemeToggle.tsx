@@ -1,16 +1,26 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
+
+// L'attribut data-theme du <html> est la source de vérité (posé avant
+// l'hydratation par le script du layout) — on s'y synchronise sans setState.
+function subscribe(onChange: () => void) {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ["data-theme"],
+  });
+  return () => observer.disconnect();
+}
+
+function getSnapshot() {
+  return document.documentElement.getAttribute("data-theme") === "dark";
+}
 
 export default function ThemeToggle() {
-  const [dark, setDark] = useState(false);
-
-  useEffect(() => {
-    setDark(document.documentElement.getAttribute("data-theme") === "dark");
-  }, []);
+  const dark = useSyncExternalStore(subscribe, getSnapshot, () => false);
 
   function toggle() {
     const next = !dark;
-    setDark(next);
     document.documentElement.setAttribute("data-theme", next ? "dark" : "");
     try {
       localStorage.setItem("sing:theme", next ? "dark" : "light");
