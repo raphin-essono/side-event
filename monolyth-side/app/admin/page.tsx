@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Navbar from "../components/Navbar";
+import AutoRefresh from "../components/AutoRefresh";
 import VoteControls from "./VoteControls";
 import StandsManager from "./StandsManager";
+import StandsChart from "./StandsChart";
 import prisma from "@/lib/prisma";
 import { getStaffSession } from "@/lib/auth";
 
@@ -64,6 +66,7 @@ export default async function AdminPage({ searchParams }: Props) {
 
   return (
     <div className="min-h-screen">
+      <AutoRefresh />
       <Navbar />
       <main className="mx-auto max-w-5xl px-5 py-8">
         <h1 className="text-2xl font-bold">Tableau de bord organisateur</h1>
@@ -80,6 +83,10 @@ export default async function AdminPage({ searchParams }: Props) {
 
         <section className="mt-8">
           <VoteControls voteOpenGlobal={settings?.voteOpenGlobal ?? false} />
+        </section>
+
+        <section className="mt-8">
+          <StandsChart stands={standRows} />
         </section>
 
         <section className="mt-10">

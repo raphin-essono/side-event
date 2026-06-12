@@ -27,14 +27,14 @@ export async function POST(req: Request) {
       return apiError("Accès invalide — rapprochez-vous de l'accueil", 401);
     }
 
-    const [settings, stand] = await Promise.all([
-      prisma.eventSettings.findUnique({ where: { id: 1 } }),
-      prisma.stand.findUnique({ where: { id: body.standId } }),
-    ]);
+    const stand = await prisma.stand.findUnique({ where: { id: body.standId } });
     if (!stand) return apiError("Stand introuvable", 404);
 
-    const voteOpen = settings?.voteOpenGlobal || stand.statutVote === "OUVERT";
-    if (!voteOpen) return apiError("Le vote est fermé pour ce stand", 403);
+    // Le statut individuel du stand est la seule source de vérité :
+    // le bouton global ne fait que synchroniser tous les statuts en base.
+    if (stand.statutVote !== "OUVERT") {
+      return apiError("Le vote est fermé pour ce stand", 403);
+    }
 
     const existing = await prisma.vote.findUnique({
       where: {

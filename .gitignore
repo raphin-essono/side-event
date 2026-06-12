@@ -1,0 +1,22 @@
+# Filet de sécurité au niveau du repo — chaque projet a aussi son .gitignore
+
+# Dépendances
+node_modules/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Bases SQLite locales
+*.db
+*.db-journal
+
+# Builds
+.next/
+dist/
+build/
+
+# Divers
+*.log
+.DS_Store

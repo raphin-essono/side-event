@@ -170,9 +170,14 @@ export default function StandsManager({ stands }: { stands: StandRow[] }) {
             Créer, modifier, supprimer et piloter le vote stand par stand.
           </p>
         </div>
-        <button onClick={() => setAdding((v) => !v)} className="btn">
-          {adding ? "Annuler" : "Ajouter un stand"}
-        </button>
+        <div className="flex gap-2">
+          <a href="/api/stands/export" download className="btn btn-outline">
+            Exporter les stats
+          </a>
+          <button onClick={() => setAdding((v) => !v)} className="btn">
+            {adding ? "Annuler" : "Ajouter un stand"}
+          </button>
+        </div>
       </div>
 
       {error && (

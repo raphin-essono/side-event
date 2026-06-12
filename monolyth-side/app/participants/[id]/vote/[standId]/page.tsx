@@ -1,6 +1,7 @@
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { validateToken } from "@/lib/tokens";
+import AutoRefresh from "../../../../components/AutoRefresh";
 import VoteForm from "./VoteForm";
 
 export const dynamic = "force-dynamic";
@@ -29,9 +30,8 @@ export default async function VotePage({ params, searchParams }: Props) {
     );
   }
 
-  const [stand, settings, existingVote] = await Promise.all([
+  const [stand, existingVote] = await Promise.all([
     prisma.stand.findUnique({ where: { id: standId } }),
-    prisma.eventSettings.findUnique({ where: { id: 1 } }),
     prisma.vote.findUnique({
       where: { participantId_standId: { participantId: id, standId } },
     }),
@@ -50,10 +50,11 @@ export default async function VotePage({ params, searchParams }: Props) {
     );
   }
 
-  const open = settings?.voteOpenGlobal || stand.statutVote === "OUVERT";
+  const open = stand.statutVote === "OUVERT";
 
   return (
     <div className="min-h-screen pb-12">
+      <AutoRefresh />
       <header className="sticky top-0 z-20 text-white [background:var(--gradient-hero)] shadow-md">
         <div className="mx-auto max-w-2xl px-5 py-4 flex items-center gap-3">
           <Link

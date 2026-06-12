@@ -1,6 +1,7 @@
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 import { validateToken } from "@/lib/tokens";
+import AutoRefresh from "../../components/AutoRefresh";
 import ParticipantHeader from "./ParticipantHeader";
 
 export const dynamic = "force-dynamic";
@@ -44,10 +45,9 @@ export default async function ParticipantSpace({ params, searchParams }: Props) 
     return <AccessDenied reason={reason} />;
   }
 
-  const [stands, phases, settings] = await Promise.all([
+  const [stands, phases] = await Promise.all([
     prisma.stand.findMany({ orderBy: { ordre: "asc" } }),
     prisma.phase.findMany({ orderBy: { ordre: "asc" } }),
-    prisma.eventSettings.findUnique({ where: { id: 1 } }),
   ]);
 
   const votedStandIds = new Set(participant.votes.map((v) => v.standId));
@@ -61,6 +61,7 @@ export default async function ParticipantSpace({ params, searchParams }: Props) 
 
   return (
     <div className="min-h-screen pb-12">
+      <AutoRefresh />
       <ParticipantHeader participant={participant} voteCount={participant.votes.length} />
 
       <nav className="sticky top-[76px] z-10 bg-background/90 backdrop-blur border-b border-border">
@@ -103,7 +104,7 @@ export default async function ParticipantSpace({ params, searchParams }: Props) 
               Évaluez les stands les plus innovants — un seul vote par stand.
             </p>
             {stands.map((s) => {
-              const open = settings?.voteOpenGlobal || s.statutVote === "OUVERT";
+              const open = s.statutVote === "OUVERT";
               const voted = votedStandIds.has(s.id);
               return (
                 <div key={s.id} className="card p-4">

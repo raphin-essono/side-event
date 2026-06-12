@@ -1,8 +1,24 @@
+# Dépendances et artefacts de build (reconstruits dans l'image)
 node_modules
 .next
 .vercel
 dist
-.env
-*.log
 coverage
+*.log
 *.tgz
+
+# Secrets — ne doivent jamais entrer dans l'image
+.env
+.env.*
+!.env.example
+
+# Base SQLite de développement
+prisma/dev.db*
+
+# Inutile dans l'image
+.git
+.gitignore
+Dockerfile
+.dockerignore
+docker-compose.yml
+README.md
