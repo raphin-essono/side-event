@@ -1,117 +1,116 @@
-name: CI/CD — Side Event
-
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-
-env:
-  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/side-event
-
-jobs:
-  # ── CI : lint + build de vérification ──────────────────────────
-  build:
-    name: Lint & build
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: monolyth-side
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: monolyth-side/package-lock.json
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Generate Prisma client
-        run: npx prisma generate
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Build
-        run: npm run build
-        env:
-          # Valeur factice pour le build — la vraie URL est fournie à l'exécution
-          DATABASE_URL: "file:./dev.db"
-          SESSION_SECRET: "ci-build-only"
-
-  # ── CD : image Docker poussée sur Docker Hub ───────────────────
-  docker:
-    name: Build & push Docker image
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Build and push
-        uses: docker/build-push-action@v6
-        with:
-          context: monolyth-side
-          push: true
-          tags: |
-            ${{ env.IMAGE_NAME }}:latest
-            ${{ env.IMAGE_NAME }}:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-
-  # ── Déploiement : pull + redémarrage sur le serveur via SSH ────
-  deploy:
-    name: Deploy to server
-    needs: docker
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Prepare compose file for server
-        run: cp monolyth-side/docker-compose.prod.yml docker-compose.yml
-
-      - name: Copy docker-compose to server
-        uses: appleboy/scp-action@v1
-        with:
-          host: ${{ secrets.IP_SERVER }}
-          username: ${{ secrets.USER }}
-          key: ${{ secrets.PRIVATE_KEY }}
-          passphrase: ${{ secrets.PASSPHRASE_PRIVATE_KEY }}
-          port: ${{ secrets.PORT }}
-          source: docker-compose.yml
-          target: /srv/side-event
-
-      - name: Deploy over SSH
-        uses: appleboy/ssh-action@v1
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
-        with:
-          host: ${{ secrets.IP_SERVER }}
-          username: ${{ secrets.USER }}
-          key: ${{ secrets.PRIVATE_KEY }}
-          passphrase: ${{ secrets.PASSPHRASE_PRIVATE_KEY }}
-          port: ${{ secrets.PORT }}
-          envs: DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
-          script: |
-            set -e
-            mkdir -p /srv/side-event
-            if [ ! -f /srv/side-event/.env ]; then
-              echo "ERROR: /srv/side-event/.env is missing on the server."
-              echo "Create it with: DOCKERHUB_USERNAME, POSTGRES_PASSWORD, SESSION_SECRET"
-              exit 1
-            fi
-            echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
-            docker pull ${{ env.IMAGE_NAME }}:latest
-            cd /srv/side-event
-            docker compose up -d
-            docker image prune -f
+name: CI/CD — Side Event
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: ${{ secrets.DOCKERHUB_USERNAME }}/side-event
+
+jobs:
+  # ── CI : lint + build de vérification ──────────────────────────
+  build:
+    name: Lint & build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+        env:
+          # Valeur factice pour le build — la vraie URL est fournie à l'exécution
+          DATABASE_URL: "file:./dev.db"
+          SESSION_SECRET: "ci-build-only"
+
+  # ── CD : image Docker poussée sur Docker Hub ───────────────────
+  docker:
+    name: Build & push Docker image
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ── Déploiement : pull + redémarrage sur le serveur via SSH ────
+  deploy:
+    name: Deploy to server
+    needs: docker
+    runs-on: ubuntu-latest
+    env:
+      DEPLOY_DIR: ~/side-event
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare compose file for server
+        run: cp docker-compose.prod.yml docker-compose.yml
+
+      - name: Copy docker-compose to server
+        uses: appleboy/scp-action@v1
+        with:
+          host: ${{ secrets.IP_SERVER }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE_PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
+          source: docker-compose.yml
+          target: ${{ env.DEPLOY_DIR }}
+
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+        with:
+          host: ${{ secrets.IP_SERVER }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          passphrase: ${{ secrets.PASSPHRASE_PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
+          envs: DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
+          script: |
+            set -e
+            mkdir -p ~/side-event
+            if [ ! -f ~/side-event/.env ]; then
+              echo "ERROR: ~/side-event/.env is missing on the server."
+              echo "Create it with: DOCKERHUB_USERNAME, POSTGRES_PASSWORD, SESSION_SECRET"
+              exit 1
+            fi
+            echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker pull ${{ env.IMAGE_NAME }}:latest
+            cd ~/side-event
+            docker compose up -d
+            docker image prune -f
