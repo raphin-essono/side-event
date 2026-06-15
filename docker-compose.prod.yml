@@ -22,8 +22,12 @@ services:
     environment:
       DATABASE_URL: "postgresql://sing:${POSTGRES_PASSWORD}@db:5432/vivatech?schema=public"
       SESSION_SECRET: ${SESSION_SECRET}
-    # Synchronise le schéma Prisma au démarrage puis lance l'app
-    command: sh -c "npx prisma db push --skip-generate && node node_modules/next/dist/bin/next start"
+      ADMIN_EMAIL: ${ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      HOST_EMAIL: ${HOST_EMAIL}
+      HOST_PASSWORD: ${HOST_PASSWORD}
+    # Synchronise le schéma, crée/MAJ les comptes staff (idempotent), puis lance l'app
+    command: sh -c "npx prisma db push --skip-generate && npm run db:seed && node node_modules/next/dist/bin/next start"
     depends_on:
       db:
         condition: service_healthy
