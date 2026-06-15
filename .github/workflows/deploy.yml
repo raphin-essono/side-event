@@ -128,13 +128,15 @@ jobs:
           ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
           HOST_EMAIL: ${{ secrets.HOST_EMAIL }}
           HOST_PASSWORD: ${{ secrets.HOST_PASSWORD }}
+          # URL publique de la plateforme (optionnel : sinon en-têtes X-Forwarded-* du proxy)
+          PUBLIC_BASE_URL: ${{ secrets.PUBLIC_BASE_URL }}
         with:
           host: ${{ secrets.IP_SERVER }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.PRIVATE_KEY }}
           passphrase: ${{ secrets.PASSPHRASE_PRIVATE_KEY }}
           port: ${{ secrets.PORT }}
-          envs: DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,POSTGRES_PASSWORD,SESSION_SECRET,ADMIN_EMAIL,ADMIN_PASSWORD,HOST_EMAIL,HOST_PASSWORD
+          envs: DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,POSTGRES_PASSWORD,SESSION_SECRET,ADMIN_EMAIL,ADMIN_PASSWORD,HOST_EMAIL,HOST_PASSWORD,PUBLIC_BASE_URL
           script_stop: true
           script: |
             set -e
@@ -159,6 +161,7 @@ jobs:
               "ADMIN_PASSWORD=${ADMIN_PASSWORD}" \
               "HOST_EMAIL=${HOST_EMAIL}" \
               "HOST_PASSWORD=${HOST_PASSWORD}" \
+              "PUBLIC_BASE_URL=${PUBLIC_BASE_URL}" \
               > ~/side-event/.env
             chmod 600 ~/side-event/.env
 

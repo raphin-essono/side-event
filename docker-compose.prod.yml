@@ -22,6 +22,8 @@ services:
     environment:
       DATABASE_URL: "postgresql://sing:${POSTGRES_PASSWORD}@db:5432/vivatech?schema=public"
       SESSION_SECRET: ${SESSION_SECRET}
+      # URL publique de la plateforme (domaine du reverse proxy) — sert à bâtir les QR codes
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL}
       ADMIN_EMAIL: ${ADMIN_EMAIL}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       HOST_EMAIL: ${HOST_EMAIL}

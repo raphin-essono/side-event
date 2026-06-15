@@ -1,5 +1,5 @@
 import prisma from "@/lib/prisma";
-import { apiError, handleError, json, requireStaff } from "@/lib/api";
+import { apiError, handleError, json, requireStaff, resolveOrigin } from "@/lib/api";
 import { buildLoginUrl, createActiveToken, generateQrDataUrl } from "@/lib/tokens";
 
 export async function POST(req: Request, ctx: { params: Promise<{ id: string }> }) {
@@ -12,7 +12,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
     if (!participant) return apiError("Participant introuvable", 404);
 
     const token = await createActiveToken(participant.id);
-    const origin = new URL(req.url).origin;
+    const origin = resolveOrigin(req);
     const loginUrl = buildLoginUrl(origin, participant.id, token.id);
     const qrDataUrl = await generateQrDataUrl(loginUrl);
 

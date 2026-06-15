@@ -23,6 +23,24 @@ export async function parseBody<T>(req: Request, schema: ZodType<T>): Promise<T>
   return schema.parse(body);
 }
 
+/**
+ * Origine publique de l'app (https://domaine), utilisée pour bâtir les URLs des QR codes.
+ * Derrière un reverse proxy, `req.url` voit l'adresse interne (localhost:3000) :
+ * on privilégie donc PUBLIC_BASE_URL, puis les en-têtes X-Forwarded-* du proxy.
+ */
+export function resolveOrigin(req: Request): string {
+  const configured = process.env.PUBLIC_BASE_URL;
+  if (configured) return configured.replace(/\/+$/, "");
+
+  const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
+  if (host) {
+    const proto = req.headers.get("x-forwarded-proto") ?? "https";
+    return `${proto}://${host}`;
+  }
+
+  return new URL(req.url).origin;
+}
+
 /** Retourne la session staff ou une réponse d'erreur 401/403. */
 export function requireStaff(
   req: Request,

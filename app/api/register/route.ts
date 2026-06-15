@@ -1,6 +1,6 @@
 import { z } from "zod";
 import prisma from "@/lib/prisma";
-import { apiError, handleError, json, parseBody } from "@/lib/api";
+import { apiError, handleError, json, parseBody, resolveOrigin } from "@/lib/api";
 import { verifyRegistrationTicket } from "@/lib/registration";
 import { buildLoginUrl, createActiveToken } from "@/lib/tokens";
 
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
     });
 
     const token = await createActiveToken(participant.id);
-    const redirectUrl = buildLoginUrl(new URL(req.url).origin, participant.id, token.id);
+    const redirectUrl = buildLoginUrl(resolveOrigin(req), participant.id, token.id);
 
     return json({ participant, redirectUrl }, 201);
   } catch (err) {

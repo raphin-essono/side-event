@@ -1,4 +1,4 @@
-import { handleError, json, requireStaff } from "@/lib/api";
+import { handleError, json, requireStaff, resolveOrigin } from "@/lib/api";
 import { CODE_TTL_MS, buildRegisterUrl, getCurrentRegistrationCode } from "@/lib/registration";
 import { generateQrDataUrl } from "@/lib/tokens";
 
@@ -13,7 +13,7 @@ export async function GET(req: Request) {
 
   try {
     const code = await getCurrentRegistrationCode();
-    const url = buildRegisterUrl(new URL(req.url).origin, code.id);
+    const url = buildRegisterUrl(resolveOrigin(req), code.id);
     const qrDataUrl = await generateQrDataUrl(url);
 
     return json({

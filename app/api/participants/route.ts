@@ -1,6 +1,6 @@
 import { z } from "zod";
 import prisma from "@/lib/prisma";
-import { apiError, handleError, json, parseBody, requireStaff } from "@/lib/api";
+import { apiError, handleError, json, parseBody, requireStaff, resolveOrigin } from "@/lib/api";
 import { buildLoginUrl, createActiveToken, generateQrDataUrl } from "@/lib/tokens";
 
 const registerSchema = z.object({
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
     });
     const token = await createActiveToken(participant.id);
 
-    const origin = new URL(req.url).origin;
+    const origin = resolveOrigin(req);
     const loginUrl = buildLoginUrl(origin, participant.id, token.id);
     const qrDataUrl = await generateQrDataUrl(loginUrl);
 
