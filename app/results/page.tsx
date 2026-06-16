@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import AutoRefresh from "../components/AutoRefresh";
 import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
 
 export const dynamic = "force-dynamic";
 
@@ -26,10 +27,12 @@ export default async function ResultsPage() {
 
   const maxAvg = ranked[0]?.avg ?? 1;
   const totalVotes = ranked.reduce((s, r) => s + r.count, 0);
+  const votesStarted = totalVotes > 0;
 
   return (
     <div className="min-h-screen flex flex-col">
       <AutoRefresh intervalMs={3000} />
+      <Navbar />
 
       {/* En-tête branded */}
       <header className="event-bg">
@@ -48,8 +51,8 @@ export default async function ResultsPage() {
         </div>
       </header>
 
-      {/* Podium (top 3) */}
-      {ranked.length >= 3 && (
+      {/* Podium (top 3) — masqué tant qu'aucun vote n'est enregistré */}
+      {votesStarted && ranked.length >= 3 && (
         <section className="mx-auto w-full max-w-3xl px-5 pt-10">
           <span className="overline">Podium</span>
           <div className="mt-4 grid grid-cols-3 gap-3 items-end">
@@ -63,14 +66,25 @@ export default async function ResultsPage() {
         </section>
       )}
 
-      {/* Classement complet */}
+      {/* Placeholder avant l'ouverture des votes */}
+      {!votesStarted && (
+        <section className="mx-auto w-full max-w-3xl px-5 pt-10">
+          <div className="card p-8 text-center">
+            <span className="badge badge-neutral">En attente</span>
+            <h2 className="mt-4 text-lg font-bold">Les votes n&apos;ont pas encore commencé</h2>
+            <p className="mt-2 text-sm text-muted">
+              Le classement et le podium s&apos;afficheront dès l&apos;ouverture des votes.
+              Cette page se met à jour automatiquement.
+            </p>
+          </div>
+        </section>
+      )}
+
+      {/* Classement complet — visible uniquement si des votes existent */}
       <main className="mx-auto w-full max-w-3xl px-5 py-8 flex-1">
-        <span className="overline">Classement complet</span>
+        {votesStarted && <span className="overline">Classement complet</span>}
         <div className="mt-4 grid gap-3">
-          {ranked.length === 0 && (
-            <p className="text-sm text-muted">Aucun vote enregistré pour l&apos;instant.</p>
-          )}
-          {ranked.map((s, i) => (
+          {votesStarted && ranked.map((s, i) => (
             <div key={s.id} className="card p-4 flex items-center gap-4">
               {/* Rang */}
               <span
