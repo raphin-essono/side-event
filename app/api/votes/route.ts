@@ -10,9 +10,11 @@ const voteSchema = z.object({
   tokenId: z.string().min(1),
   standId: z.string().min(1),
   criteres: z.object({
-    innovation: z.number().int().min(1).max(5),
-    clarte: z.number().int().min(1).max(5),
-    impact: z.number().int().min(1).max(5),
+    adequation:   z.number().int().min(1).max(5),
+    innovation:   z.number().int().min(1).max(5),
+    modele:       z.number().int().min(1).max(5),
+    presentation: z.number().int().min(1).max(5),
+    perspectives: z.number().int().min(1).max(5),
   }),
   commentaire: z.string().max(1000).optional(),
 });

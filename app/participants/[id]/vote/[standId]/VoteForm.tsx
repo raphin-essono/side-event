@@ -9,22 +9,32 @@ type Props = {
   standName: string;
 };
 
-// Les 3 questions obligatoires — notées chacune de 1 à 5
+// Les 5 questions officielles d'évaluation — notées chacune de 1 à 5
 const QUESTIONS = [
   {
+    key: "adequation" as const,
+    label: "Adéquation Problème-Solution",
+    hint: "La startup démontre-t-elle clairement qu'elle répond à un problème réel, important et bien identifié auprès de sa cible ?",
+  },
+  {
     key: "innovation" as const,
-    label: "Innovation",
-    hint: "Le projet propose-t-il une approche nouvelle ou originale ?",
+    label: "Innovation et Proposition de Valeur",
+    hint: "La solution apporte-t-elle une valeur ajoutée différenciante et innovante par rapport aux solutions existantes ?",
   },
   {
-    key: "clarte" as const,
-    label: "Clarté de la démo",
-    hint: "La présentation est-elle claire et bien structurée ?",
+    key: "modele" as const,
+    label: "Modèle Économique et Viabilité Financière",
+    hint: "La startup dispose-t-elle d'un modèle économique clair, générateur de revenus, et présente-t-elle des prévisions financières cohérentes avec son niveau de développement ?",
   },
   {
-    key: "impact" as const,
-    label: "Impact métier",
-    hint: "Le projet a-t-il un potentiel d'impact concret ?",
+    key: "presentation" as const,
+    label: "Qualité de la Présentation",
+    hint: "L'équipe a-t-elle présenté son projet de façon claire, structurée et convaincante ?",
+  },
+  {
+    key: "perspectives" as const,
+    label: "Perspectives de Développement",
+    hint: "La startup présente-t-elle un potentiel crédible de croissance, de passage à l'échelle et d'impact à moyen terme ?",
   },
 ] as const;
 
