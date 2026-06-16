@@ -101,29 +101,70 @@ export default function VoteForm({ participantId, tokenId, standId, standName }:
         <Stars value={note} onChange={setNote} />
       </div>
 
-      <div className="card p-5 grid gap-4">
+      <div className="card p-5 grid gap-5">
         <div>
           <h2 className="text-sm font-semibold">Critères détaillés</h2>
-          <p className="text-xs text-muted mt-0.5">Optionnel — de 1 à 5.</p>
+          <p className="text-xs text-muted mt-0.5">Optionnel — sélectionnez une note de 1 à 5.</p>
         </div>
         {CRITERIA.map((c) => (
-          <label key={c.key} className="grid gap-1.5">
-            <span className="flex justify-between text-xs font-medium">
-              {c.label}
-              <span className="text-muted">{criteres[c.key] ?? "—"}</span>
-            </span>
-            <input
-              type="range"
-              min={1}
-              max={5}
-              step={1}
-              value={criteres[c.key] ?? 3}
-              onChange={(e) =>
-                setCriteres((prev) => ({ ...prev, [c.key]: Number(e.target.value) }))
-              }
-              className="w-full accent-(--primary)"
-            />
-          </label>
+          <fieldset key={c.key} className="grid gap-2">
+            <legend className="text-xs font-medium">{c.label}</legend>
+            <div className="flex gap-2 flex-wrap">
+              {[1, 2, 3, 4, 5].map((n) => {
+                const checked = criteres[c.key] === n;
+                return (
+                  <label
+                    key={n}
+                    className="cursor-pointer select-none"
+                  >
+                    <input
+                      type="radio"
+                      name={`critere-${c.key}`}
+                      value={n}
+                      checked={checked}
+                      onChange={() =>
+                        setCriteres((prev) => ({ ...prev, [c.key]: n }))
+                      }
+                      className="sr-only"
+                    />
+                    <span
+                      className="flex h-10 w-10 items-center justify-center rounded-lg border text-sm font-semibold transition-colors"
+                      style={
+                        checked
+                          ? {
+                              background: "var(--primary)",
+                              borderColor: "var(--primary)",
+                              color: "#fff",
+                            }
+                          : {
+                              background: "var(--card)",
+                              borderColor: "var(--border)",
+                              color: "var(--muted)",
+                            }
+                      }
+                    >
+                      {n}
+                    </span>
+                  </label>
+                );
+              })}
+              {criteres[c.key] && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setCriteres((prev) => {
+                      const next = { ...prev };
+                      delete next[c.key];
+                      return next;
+                    })
+                  }
+                  className="self-center text-xs text-muted hover:text-danger transition-colors ml-1"
+                >
+                  Effacer
+                </button>
+              )}
+            </div>
+          </fieldset>
         ))}
       </div>
 

@@ -25,8 +25,8 @@ export default function Home() {
               18 &amp; 19 juin 2026 — enregistrement par QR, programme en direct et vote des stands.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <Link href="/host/welcome" className="btn btn-accent">
-                Écran d&apos;accueil
+              <Link href="/results" className="btn btn-accent">
+                Voir les résultats de votes
               </Link>
               <Link
                 href="/login"
