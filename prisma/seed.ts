@@ -55,14 +55,28 @@ const STANDS = [
   },
 ];
 
+// Programme officiel — Side Event VivaTech Libreville 2026
+// jour 1 = 18 juin · jour 2 = 19 juin. `salle` sert d'étiquette de catégorie.
 const PROGRAM = [
-  { horaire: "09:30", titre: "Accueil café & enregistrement", salle: "Hall principal", ordre: 1 },
-  { horaire: "10:00", titre: "Keynote: SING & l'IA d'entreprise", salle: "Auditorium", ordre: 2 },
-  { horaire: "11:00", titre: "Table ronde: Data & Trust", salle: "Salle Galilée", ordre: 3 },
-  { horaire: "12:30", titre: "Déjeuner networking", salle: "Rooftop", ordre: 4 },
-  { horaire: "14:00", titre: "Démos sur les stands", salle: "Village SING", ordre: 5 },
-  { horaire: "16:00", titre: "Ouverture des votes", salle: "Village SING", ordre: 6, enCours: true },
-  { horaire: "17:30", titre: "Remise des prix & cocktail", salle: "Auditorium", ordre: 7 },
+  // ── Jour 1 (18 juin 2026) : Vision et solutions tech ──
+  { jour: 1, horaire: "09h00–10h00", titre: "Accueil et installation des participants", salle: "Accueil", ordre: 1 },
+  { jour: 1, horaire: "11h00–17h00", titre: "Ouverture des expositions et vernissage", salle: "Exposition", ordre: 2 },
+  { jour: 1, horaire: "15h00–16h00", titre: "Atelier pratique 1 : Comment créer un agent IA ?", salle: "Atelier", ordre: 3 },
+  { jour: 1, horaire: "16h00–17h00", titre: "Atelier pratique 2 : Comment sécuriser son agent IA ?", salle: "Atelier", ordre: 4 },
+  { jour: 1, horaire: "17h00–17h05", titre: "Annonce des finalistes", salle: "Cérémonie", ordre: 5 },
+  { jour: 1, horaire: "17h10", titre: "Fin de la journée", salle: null, ordre: 6 },
+
+  // ── Jour 2 (19 juin 2026) : Expertise et discussion ──
+  { jour: 2, horaire: "14h30–14h35", titre: "Mot de bienvenue et présentation du programme", salle: "Ouverture", ordre: 7 },
+  { jour: 2, horaire: "14h40–14h55", titre: "Keynote 1 : Marketing digital à l'ère de l'IA", salle: "Keynote", ordre: 8 },
+  { jour: 2, horaire: "14h55–15h10", titre: "Keynote 2 : Réglementation des réseaux sociaux : menaces et opportunités", salle: "Keynote", ordre: 9 },
+  { jour: 2, horaire: "15h15–15h35", titre: "Immersion au Pavillon Afrique — Focus Innovation", salle: "Immersion", ordre: 10 },
+  { jour: 2, horaire: "15h40–15h55", titre: "Keynote 3 : L'IA au cœur de la formation des talents locaux", salle: "Keynote", ordre: 11 },
+  { jour: 2, horaire: "15h55–16h10", titre: "Keynote 4 : Exploiter le potentiel de l'IA pour améliorer le système de santé", salle: "Keynote", ordre: 12 },
+  { jour: 2, horaire: "16h15–16h35", titre: "Pitchs des finalistes", salle: "Concours", ordre: 13 },
+  { jour: 2, horaire: "16h35–16h45", titre: "Annonce du classement et remise des prix", salle: "Cérémonie", ordre: 14 },
+  { jour: 2, horaire: "16h45–17h30", titre: "Cocktail et networking", salle: "Networking", ordre: 15 },
+  { jour: 2, horaire: "17h30", titre: "Fin du SIDE Event", salle: null, ordre: 16 },
 ];
 
 async function main() {

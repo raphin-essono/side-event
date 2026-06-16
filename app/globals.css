@@ -1,50 +1,56 @@
 @import "tailwindcss";
 
-/* ── Design tokens — palette élégante SING ──────────────
-   #FDFCFE blanc nacré · #E9F7F0 menthe · #CEDED5 sauge · #A8667B mauve
+/* ── Design tokens — palette VivaTech Side Event ────────
+   Violet profond · magenta · or (#E8920A) — d'après le visuel officiel
 ──────────────────────────────────────────────────────── */
 :root {
-  --background: #fdfcfe;
+  --background: #fbf7fd;
   --card: #ffffff;
-  --foreground: #2b2530;
-  --muted: #7a737f;
-  --border: #e3ebe6;
+  --foreground: #241a2e;
+  --muted: #7c7088;
+  --border: #ece3f1;
 
-  --primary: #a8667b;
-  --primary-light: #bc7f92;
-  --primary-pale: #f4e9ed;
-  --accent: #5e8370;
-  --accent-pale: #ceded5;
-  --success: #46765f;
-  --success-pale: #e9f7f0;
-  --danger: #b3445a;
-  --danger-pale: #f8e8ec;
+  --primary: #9b1fb0;
+  --primary-light: #b94ec9;
+  --primary-pale: #f6e8fa;
 
-  --gradient-hero: linear-gradient(135deg, #9a5a6f 0%, #b97f93 100%);
-  --shadow-soft: 0 1px 2px rgb(43 37 48 / 0.05), 0 3px 10px rgb(43 37 48 / 0.04);
-  --shadow-lift: 0 4px 12px rgb(43 37 48 / 0.08), 0 12px 32px rgb(43 37 48 / 0.07);
+  --accent: #e8920a;
+  --accent-foreground: #2a1633;
+  --accent-pale: #fdf0d6;
+
+  --success: #2e9c6f;
+  --success-pale: #e3f7ee;
+  --danger: #d61f5b;
+  --danger-pale: #fce6ed;
+
+  --gradient-hero: linear-gradient(135deg, #3b0a52 0%, #7a149b 45%, #c01d86 80%, #ee7a1a 128%);
+  --shadow-soft: 0 1px 2px rgb(36 26 46 / 0.06), 0 3px 10px rgb(36 26 46 / 0.05);
+  --shadow-lift: 0 4px 12px rgb(36 26 46 / 0.1), 0 14px 36px rgb(123 20 155 / 0.12);
 }
 
 :root[data-theme="dark"] {
-  --background: #17141a;
-  --card: #201c25;
-  --foreground: #efeaf1;
-  --muted: #9e94a5;
-  --border: #322c39;
+  --background: #170d20;
+  --card: #221531;
+  --foreground: #f1e9f6;
+  --muted: #a596b3;
+  --border: #352544;
 
-  --primary: #c68fa1;
-  --primary-light: #d6a8b7;
-  --primary-pale: #322329;
-  --accent: #9dbfae;
-  --accent-pale: #222e28;
-  --success: #8fbca6;
-  --success-pale: #1e2b25;
-  --danger: #e08097;
-  --danger-pale: #342026;
+  --primary: #cd6fe0;
+  --primary-light: #dd97ec;
+  --primary-pale: #34193f;
 
-  --gradient-hero: linear-gradient(135deg, #4a3340 0%, #a8667b 100%);
-  --shadow-soft: 0 1px 3px rgb(0 0 0 / 0.35);
-  --shadow-lift: 0 8px 28px rgb(0 0 0 / 0.45);
+  --accent: #f4ab2e;
+  --accent-foreground: #2a1633;
+  --accent-pale: #3a2a14;
+
+  --success: #6fcfa3;
+  --success-pale: #16271f;
+  --danger: #f1739b;
+  --danger-pale: #361722;
+
+  --gradient-hero: linear-gradient(135deg, #2a0640 0%, #6a1289 45%, #a81877 82%, #cf6516 128%);
+  --shadow-soft: 0 1px 3px rgb(0 0 0 / 0.4);
+  --shadow-lift: 0 8px 28px rgb(0 0 0 / 0.5);
 }
 
 @theme inline {
@@ -57,6 +63,7 @@
   --color-primary-light: var(--primary-light);
   --color-primary-pale: var(--primary-pale);
   --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
   --color-accent-pale: var(--accent-pale);
   --color-success: var(--success);
   --color-success-pale: var(--success-pale);
@@ -123,7 +130,7 @@ h1, h2, h3 {
 .btn:active { transform: translateY(1px); }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
-.btn-accent { background: var(--accent); }
+.btn-accent { background: var(--accent); color: var(--accent-foreground); }
 .btn-outline {
   background: transparent;
   color: var(--primary);
@@ -186,3 +193,59 @@ h1, h2, h3 {
 }
 .star[data-active="true"] { color: var(--primary); }
 .star:hover { transform: scale(1.12); }
+
+/* ── Arrière-plans branded VivaTech ─────────────────────── */
+/* Halo subtil sur tout le fond — garde les écrans de travail lisibles */
+body {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(60rem 60rem at 100% -10%, color-mix(in srgb, var(--primary) 12%, transparent), transparent 60%),
+    radial-gradient(50rem 50rem at -10% 110%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 55%);
+  background-attachment: fixed;
+}
+
+/* Visuel officiel de l'événement en fond, avec voile pour la lisibilité.
+   Utilisé sur les écrans publics (accueil, login). */
+.event-bg {
+  position: relative;
+  isolation: isolate;
+}
+.event-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-image: url("/event-flyer.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.event-bg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(135deg,
+      color-mix(in srgb, #3b0a52 88%, transparent) 0%,
+      color-mix(in srgb, #7a149b 80%, transparent) 45%,
+      color-mix(in srgb, #c01d86 72%, transparent) 100%);
+  backdrop-filter: blur(2px);
+}
+
+/* Surface en verre par-dessus le voile branded */
+.glass-card {
+  background: color-mix(in srgb, var(--card) 92%, transparent);
+  border: 1px solid color-mix(in srgb, #ffffff 16%, transparent);
+  border-radius: 1rem;
+  box-shadow: var(--shadow-lift);
+  backdrop-filter: blur(8px);
+}
+
+/* Dégradé texte (titres branded) */
+.brand-text {
+  background-image: var(--gradient-hero);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}

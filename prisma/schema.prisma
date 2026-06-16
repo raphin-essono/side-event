@@ -96,6 +96,7 @@ model Phase {
   titre    String
   horaire  String
   salle    String?
+  jour     Int      @default(1)
   debut    DateTime?
   fin      DateTime?
   enCours  Boolean  @default(false)

@@ -59,6 +59,11 @@ export default async function ParticipantSpace({ params, searchParams }: Props) 
     { key: "info", label: "Infos" },
   ];
 
+  const DAYS = [
+    { jour: 1, date: "18 juin 2026", theme: "Vision et solutions tech", horaires: "11h00 – 18h00" },
+    { jour: 2, date: "19 juin 2026", theme: "Expertise et discussion", horaires: "14h00 – 19h00" },
+  ];
+
   return (
     <div className="min-h-screen pb-12">
       <AutoRefresh />
@@ -81,20 +86,37 @@ export default async function ParticipantSpace({ params, searchParams }: Props) 
 
       <main className="mx-auto max-w-2xl px-5 pt-6">
         {tab === "program" && (
-          <div className="grid gap-2.5">
+          <div className="grid gap-7">
             {phases.length === 0 && <p className="text-sm text-muted">Programme à venir.</p>}
-            {phases.map((p) => (
-              <div key={p.id} className="card p-4 flex items-start gap-4">
-                <span className="badge badge-neutral shrink-0 font-mono">{p.horaire}</span>
-                <div className="min-w-0">
-                  <div className="font-semibold text-sm flex items-center gap-2">
-                    {p.titre}
-                    {p.enCours && <span className="badge badge-open">En cours</span>}
+            {DAYS.map((day) => {
+              const dayPhases = phases.filter((p) => p.jour === day.jour);
+              if (dayPhases.length === 0) return null;
+              return (
+                <section key={day.jour} className="grid gap-2.5">
+                  <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                    <h2 className="text-base font-bold">
+                      Jour {day.jour} <span className="text-primary">· {day.date}</span>
+                    </h2>
+                    <span className="text-xs text-muted font-mono">{day.horaires}</span>
                   </div>
-                  {p.salle && <div className="text-xs text-muted mt-0.5">{p.salle}</div>}
-                </div>
-              </div>
-            ))}
+                  <p className="overline">{day.theme}</p>
+                  {dayPhases.map((p) => (
+                    <div key={p.id} className="card p-4 flex items-start gap-3.5">
+                      <span className="badge badge-neutral shrink-0 whitespace-nowrap font-mono text-[0.7rem]">
+                        {p.horaire}
+                      </span>
+                      <div className="min-w-0">
+                        <div className="font-semibold text-sm flex items-center gap-2">
+                          {p.titre}
+                          {p.enCours && <span className="badge badge-open">En cours</span>}
+                        </div>
+                        {p.salle && <div className="text-xs text-accent mt-0.5">{p.salle}</div>}
+                      </div>
+                    </div>
+                  ))}
+                </section>
+              );
+            })}
           </div>
         )}
 
@@ -146,9 +168,27 @@ export default async function ParticipantSpace({ params, searchParams }: Props) 
         {tab === "info" && (
           <div className="grid gap-3">
             <div className="card p-5">
+              <h2 className="font-semibold text-sm">Dates &amp; horaires</h2>
+              <ul className="text-sm text-muted mt-1.5 space-y-1">
+                <li>
+                  <span className="font-medium text-foreground">18 juin 2026</span> — 11h00 à 18h00
+                </li>
+                <li>
+                  <span className="font-medium text-foreground">19 juin 2026</span> — 14h00 à 19h00
+                </li>
+              </ul>
+            </div>
+            <div className="card p-5">
               <h2 className="font-semibold text-sm">Lieu</h2>
               <p className="text-sm text-muted mt-1.5">
-                Village SING — VivaTech. Les stands se trouvent dans le hall principal.
+                Side Event VivaTech — Libreville, Gabon. Les stands se trouvent dans le hall
+                principal des expositions.
+              </p>
+            </div>
+            <div className="card p-5">
+              <h2 className="font-semibold text-sm">Contact</h2>
+              <p className="text-sm text-muted mt-1.5">
+                077 96 33 67 ou 074 13 71 03
               </p>
             </div>
             <div className="card p-5">
