@@ -56,7 +56,7 @@ export default function HostWelcomePage() {
   return (
     <div className="grid gap-5">
       <div className="card p-8 text-center">
-        <span className="badge badge-accent">QR dynamique — usage unique</span>
+        <span className="badge badge-accent">QR dynamique - usage unique</span>
         <h1 className="mt-3 text-xl font-bold">Scannez pour vous inscrire</h1>
         <p className="mt-1 text-sm text-muted">
           Le participant scanne, remplit lui-même ses informations et accède directement à la

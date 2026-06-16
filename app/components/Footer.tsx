@@ -1,11 +1,13 @@
-// Partenaires officiels du Side Event VivaTech Libreville.
-// Pour afficher de vrais logos : déposer les fichiers dans public/partners/
-// puis renseigner `logo` (ex. "/partners/airtel.png").
-const PARTNERS: { nom: string; sousTitre?: string; logo?: string }[] = [
-  { nom: "AG Partners", sousTitre: "Publics Africa" },
-  { nom: "AriaTech Award" },
-  { nom: "SING", sousTitre: "Société d'Incubation Numérique du Gabon" },
-  { nom: "Airtel", sousTitre: "Gabon" },
+import Image from "next/image";
+
+type Partner = { nom: string; sousTitre?: string; logo?: string; logoH?: number };
+
+// Partenaires officiels — déposer les logos dans public/partners/ et renseigner `logo`.
+const PARTNERS: Partner[] = [
+  { nom: "AG Partners Publicis Africa", logo: "/partners/ag-partners.png", logoH: 72 },
+  { nom: "AfricaTech Awards", logo: "/partners/africatech-awards.png", logoH: 52 },
+  { nom: "SING SA", logo: "/partners/sing.png", logoH: 64 },
+  { nom: "Airtel Gabon", logo: "/partners/airtel.png", logoH: 56 },
 ];
 
 export default function Footer() {
@@ -13,12 +15,24 @@ export default function Footer() {
     <footer className="border-t border-border bg-card/70 backdrop-blur">
       <div className="mx-auto max-w-5xl px-5 py-8">
         <p className="overline text-center">Nos partenaires</p>
-        <ul className="mt-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-5">
+        <ul className="mt-5 flex flex-wrap items-center justify-center gap-x-10 gap-y-6">
           {PARTNERS.map((p) => (
             <li key={p.nom} className="text-center">
-              <span className="block text-sm font-bold tracking-tight">{p.nom}</span>
-              {p.sousTitre && (
-                <span className="block text-[11px] text-muted">{p.sousTitre}</span>
+              {p.logo ? (
+                <Image
+                  src={p.logo}
+                  alt={p.nom}
+                  width={160}
+                  height={p.logoH ?? 48}
+                  className="h-12 w-auto object-contain"
+                />
+              ) : (
+                <>
+                  <span className="block text-sm font-bold tracking-tight">{p.nom}</span>
+                  {p.sousTitre && (
+                    <span className="block text-[11px] text-muted">{p.sousTitre}</span>
+                  )}
+                </>
               )}
             </li>
           ))}
