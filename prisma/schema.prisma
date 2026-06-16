@@ -80,7 +80,7 @@ model Vote {
   id            String   @id @default(uuid())
   participantId String
   standId       String
-  noteGlobale   Int
+  noteGlobale   Float
   criteres      Json?
   commentaire   String?
   votedAt       DateTime @default(now())

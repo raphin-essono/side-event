@@ -3,18 +3,17 @@ import prisma from "@/lib/prisma";
 import { apiError, handleError, json, parseBody } from "@/lib/api";
 import { validateToken } from "@/lib/tokens";
 
+// noteGlobale est désormais calculé côté serveur (moyenne des 3 critères).
+// Les 3 critères sont obligatoires.
 const voteSchema = z.object({
   participantId: z.string().min(1),
   tokenId: z.string().min(1),
   standId: z.string().min(1),
-  noteGlobale: z.number().int().min(1, "Note 1 à 5").max(5, "Note 1 à 5"),
-  criteres: z
-    .object({
-      innovation: z.number().int().min(1).max(5).optional(),
-      clarte: z.number().int().min(1).max(5).optional(),
-      impact: z.number().int().min(1).max(5).optional(),
-    })
-    .optional(),
+  criteres: z.object({
+    innovation: z.number().int().min(1).max(5),
+    clarte: z.number().int().min(1).max(5),
+    impact: z.number().int().min(1).max(5),
+  }),
   commentaire: z.string().max(1000).optional(),
 });
 
@@ -46,12 +45,17 @@ export async function POST(req: Request) {
     });
     if (existing) return apiError("Vote déjà enregistré pour ce stand", 409);
 
+    // Calcul de la note globale = moyenne des 3 critères (arrondie à 2 décimales)
+    const vals = Object.values(body.criteres);
+    const noteGlobale =
+      Math.round((vals.reduce((s, v) => s + v, 0) / vals.length) * 100) / 100;
+
     const vote = await prisma.vote.create({
       data: {
         participantId: body.participantId,
         standId: body.standId,
-        noteGlobale: body.noteGlobale,
-        criteres: body.criteres ?? undefined,
+        noteGlobale,
+        criteres: body.criteres,
         commentaire: body.commentaire,
       },
     });

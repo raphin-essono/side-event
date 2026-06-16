@@ -9,45 +9,104 @@ type Props = {
   standName: string;
 };
 
-const CRITERIA = [
-  { key: "innovation", label: "Innovation" },
-  { key: "clarte", label: "Clarté de la démo" },
-  { key: "impact", label: "Impact métier" },
+// Les 3 questions obligatoires — notées chacune de 1 à 5
+const QUESTIONS = [
+  {
+    key: "innovation" as const,
+    label: "Innovation",
+    hint: "Le projet propose-t-il une approche nouvelle ou originale ?",
+  },
+  {
+    key: "clarte" as const,
+    label: "Clarté de la démo",
+    hint: "La présentation est-elle claire et bien structurée ?",
+  },
+  {
+    key: "impact" as const,
+    label: "Impact métier",
+    hint: "Le projet a-t-il un potentiel d'impact concret ?",
+  },
 ] as const;
 
-function Stars({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+type QuestionKey = (typeof QUESTIONS)[number]["key"];
+type Criteres = Partial<Record<QuestionKey, number>>;
+
+// Moyenne arrondie à 1 décimale, ou null si non complète
+function computeAvg(c: Criteres): number | null {
+  const vals = QUESTIONS.map((q) => c[q.key]).filter((v): v is number => v !== undefined);
+  if (vals.length < QUESTIONS.length) return null;
+  return Math.round((vals.reduce((s, v) => s + v, 0) / vals.length) * 10) / 10;
+}
+
+// Composant cases à cocher 1–5
+function RatingGroup({
+  questionKey,
+  value,
+  onChange,
+}: {
+  questionKey: QuestionKey;
+  value: number | undefined;
+  onChange: (v: number) => void;
+}) {
   return (
-    <div className="flex gap-1">
-      {[1, 2, 3, 4, 5].map((n) => (
-        <button
-          key={n}
-          type="button"
-          onClick={() => onChange(n)}
-          aria-label={`${n} étoile(s)`}
-          className="star"
-          data-active={n <= value}
-        >
-          ★
-        </button>
-      ))}
+    <div className="flex gap-2">
+      {[1, 2, 3, 4, 5].map((n) => {
+        const checked = value === n;
+        return (
+          <label key={n} className="cursor-pointer select-none">
+            <input
+              type="radio"
+              name={`q-${questionKey}`}
+              value={n}
+              checked={checked}
+              onChange={() => onChange(n)}
+              className="sr-only"
+            />
+            <span
+              className="flex h-11 w-11 items-center justify-center rounded-xl border-2 text-sm font-bold transition-all"
+              style={
+                checked
+                  ? {
+                      background: "var(--primary)",
+                      borderColor: "var(--primary)",
+                      color: "#fff",
+                      boxShadow: "0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent)",
+                    }
+                  : {
+                      background: "var(--card)",
+                      borderColor: "var(--border)",
+                      color: "var(--muted)",
+                    }
+              }
+            >
+              {n}
+            </span>
+          </label>
+        );
+      })}
     </div>
   );
 }
 
 export default function VoteForm({ participantId, tokenId, standId, standName }: Props) {
-  const [note, setNote] = useState(0);
-  const [criteres, setCriteres] = useState<Record<string, number>>({});
+  const [criteres, setCriteres] = useState<Criteres>({});
   const [commentaire, setCommentaire] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
   const backUrl = `/participants/${participantId}?t=${tokenId}&tab=stands`;
+  const avg = computeAvg(criteres);
+  const allAnswered = avg !== null;
+
+  function setQuestion(key: QuestionKey, val: number) {
+    setCriteres((prev) => ({ ...prev, [key]: val }));
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (note < 1) {
-      setError("Attribuez une note globale (1 à 5 étoiles)");
+    if (!allAnswered) {
+      setError("Répondez aux 3 questions pour valider votre vote.");
       return;
     }
     setLoading(true);
@@ -60,8 +119,7 @@ export default function VoteForm({ participantId, tokenId, standId, standName }:
           participantId,
           tokenId,
           standId,
-          noteGlobale: note,
-          criteres: Object.keys(criteres).length > 0 ? criteres : undefined,
+          criteres,
           commentaire: commentaire.trim() || undefined,
         }),
       });
@@ -83,7 +141,11 @@ export default function VoteForm({ participantId, tokenId, standId, standName }:
       <div className="card p-8 text-center">
         <span className="badge badge-open">Vote confirmé</span>
         <h2 className="mt-4 text-lg font-bold">Votre vote a été pris en compte</h2>
-        <p className="mt-1.5 text-sm text-muted">Merci pour votre participation !</p>
+        <p className="mt-1.5 text-sm text-muted">
+          Note attribuée à {standName} :{" "}
+          <span className="font-bold text-foreground">{avg} / 5</span>
+        </p>
+        <p className="mt-1 text-xs text-muted">Merci pour votre participation !</p>
         <Link href={backUrl} className="btn mt-6 inline-flex">
           Retour aux stands
         </Link>
@@ -93,89 +155,73 @@ export default function VoteForm({ participantId, tokenId, standId, standName }:
 
   return (
     <form onSubmit={submit} className="grid gap-5">
-      <div className="card p-5">
-        <h2 className="text-sm font-semibold">
-          Note globale <span className="text-danger">*</span>
-        </h2>
-        <p className="text-xs text-muted mt-0.5 mb-3">Votre évaluation générale de {standName}.</p>
-        <Stars value={note} onChange={setNote} />
-      </div>
-
-      <div className="card p-5 grid gap-5">
+      {/* Questions */}
+      <div className="card p-5 grid gap-6">
         <div>
-          <h2 className="text-sm font-semibold">Critères détaillés</h2>
-          <p className="text-xs text-muted mt-0.5">Optionnel — sélectionnez une note de 1 à 5.</p>
+          <h2 className="text-sm font-semibold">Évaluez {standName}</h2>
+          <p className="text-xs text-muted mt-0.5">
+            Répondez aux 3 questions — notez de 1 (faible) à 5 (excellent).
+          </p>
         </div>
-        {CRITERIA.map((c) => (
-          <fieldset key={c.key} className="grid gap-2">
-            <legend className="text-xs font-medium">{c.label}</legend>
-            <div className="flex gap-2 flex-wrap">
-              {[1, 2, 3, 4, 5].map((n) => {
-                const checked = criteres[c.key] === n;
-                return (
-                  <label
-                    key={n}
-                    className="cursor-pointer select-none"
-                  >
-                    <input
-                      type="radio"
-                      name={`critere-${c.key}`}
-                      value={n}
-                      checked={checked}
-                      onChange={() =>
-                        setCriteres((prev) => ({ ...prev, [c.key]: n }))
-                      }
-                      className="sr-only"
-                    />
-                    <span
-                      className="flex h-10 w-10 items-center justify-center rounded-lg border text-sm font-semibold transition-colors"
-                      style={
-                        checked
-                          ? {
-                              background: "var(--primary)",
-                              borderColor: "var(--primary)",
-                              color: "#fff",
-                            }
-                          : {
-                              background: "var(--card)",
-                              borderColor: "var(--border)",
-                              color: "var(--muted)",
-                            }
-                      }
-                    >
-                      {n}
-                    </span>
-                  </label>
-                );
-              })}
-              {criteres[c.key] && (
-                <button
-                  type="button"
-                  onClick={() =>
-                    setCriteres((prev) => {
-                      const next = { ...prev };
-                      delete next[c.key];
-                      return next;
-                    })
-                  }
-                  className="self-center text-xs text-muted hover:text-danger transition-colors ml-1"
-                >
-                  Effacer
-                </button>
-              )}
-            </div>
+
+        {QUESTIONS.map((q, i) => (
+          <fieldset key={q.key} className="grid gap-2">
+            <legend className="text-sm font-medium">
+              <span className="text-primary font-bold mr-1">{i + 1}.</span>
+              {q.label}
+              <span className="text-danger ml-0.5">*</span>
+            </legend>
+            <p className="text-xs text-muted">{q.hint}</p>
+            <RatingGroup
+              questionKey={q.key}
+              value={criteres[q.key]}
+              onChange={(v) => setQuestion(q.key, v)}
+            />
           </fieldset>
         ))}
       </div>
 
+      {/* Note calculée en temps réel */}
+      <div
+        className="card p-4 flex items-center justify-between gap-3 transition-all"
+        style={{
+          borderColor: allAnswered ? "var(--primary)" : "var(--border)",
+          background: allAnswered ? "var(--primary-pale)" : undefined,
+        }}
+      >
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted">
+            Note globale calculée
+          </p>
+          <p className="text-xs text-muted mt-0.5">Moyenne automatique des 3 questions</p>
+        </div>
+        <div className="text-right shrink-0">
+          {allAnswered ? (
+            <>
+              <span className="text-3xl font-extrabold text-primary">{avg}</span>
+              <span className="text-sm text-muted"> / 5</span>
+            </>
+          ) : (
+            <span className="text-sm text-muted italic">
+              {QUESTIONS.length - Object.keys(criteres).length} réponse
+              {QUESTIONS.length - Object.keys(criteres).length > 1 ? "s" : ""} restante
+              {QUESTIONS.length - Object.keys(criteres).length > 1 ? "s" : ""}
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Commentaire optionnel */}
       <div className="card p-5">
-        <h2 className="text-sm font-semibold">Commentaire</h2>
+        <h2 className="text-sm font-semibold">
+          Commentaire <span className="text-muted font-normal">(optionnel)</span>
+        </h2>
         <textarea
           value={commentaire}
           onChange={(e) => setCommentaire(e.target.value)}
           rows={3}
           maxLength={1000}
-          placeholder="Optionnel — ce qui vous a marqué…"
+          placeholder="Ce qui vous a marqué…"
           className="input mt-2.5 resize-none"
         />
       </div>
@@ -188,7 +234,7 @@ export default function VoteForm({ participantId, tokenId, standId, standName }:
         <Link href={backUrl} className="btn btn-outline flex-1 text-center">
           Annuler
         </Link>
-        <button type="submit" disabled={loading} className="btn flex-1">
+        <button type="submit" disabled={loading || !allAnswered} className="btn flex-1">
           {loading ? "Envoi…" : "Valider mon vote"}
         </button>
       </div>
