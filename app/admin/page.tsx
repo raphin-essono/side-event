@@ -5,6 +5,7 @@ import AutoRefresh from "../components/AutoRefresh";
 import VoteControls from "./VoteControls";
 import StandsManager from "./StandsManager";
 import StandsChart from "./StandsChart";
+import ParticipantsTable from "./ParticipantsTable";
 import prisma from "@/lib/prisma";
 import { getStaffSession } from "@/lib/auth";
 
@@ -40,11 +41,12 @@ export default async function AdminPage({ searchParams }: Props) {
 
   const totalPages = Math.max(1, Math.ceil(participantCount / PAGE_SIZE));
 
+  const maxVoters = Math.max(...stands.map((s) => s.votes.length), 1);
+
   const standRows = stands.map((s) => {
-    const avg =
-      s.votes.length > 0
-        ? s.votes.reduce((sum, v) => sum + v.noteGlobale, 0) / s.votes.length
-        : 0;
+    const sum = s.votes.reduce((acc, v) => acc + v.noteGlobale, 0);
+    // Score normalisé : somme des notes / nombre max de votants (équité entre stands)
+    const avg = Math.round((sum / maxVoters) * 100) / 100;
     return {
       id: s.id,
       nom: s.nom,
@@ -106,48 +108,7 @@ export default async function AdminPage({ searchParams }: Props) {
             </a>
           </div>
 
-          <div className="card overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border text-left">
-                  <th className="px-4 py-3 font-semibold">Nom</th>
-                  <th className="px-4 py-3 font-semibold">Prénom</th>
-                  <th className="px-4 py-3 font-semibold">Fonction</th>
-                  <th className="px-4 py-3 font-semibold">Email</th>
-                  <th className="px-4 py-3 font-semibold">Inscrit le</th>
-                  <th className="px-4 py-3 font-semibold text-right">Votes</th>
-                </tr>
-              </thead>
-              <tbody>
-                {participants.length === 0 && (
-                  <tr>
-                    <td colSpan={6} className="px-4 py-6 text-center text-muted">
-                      Aucun participant enregistré pour le moment.
-                    </td>
-                  </tr>
-                )}
-                {participants.map((part) => (
-                  <tr key={part.id} className="border-b border-border last:border-0">
-                    <td className="px-4 py-3 font-medium">{part.nom}</td>
-                    <td className="px-4 py-3">{part.prenom}</td>
-                    <td className="px-4 py-3 text-muted">{part.fonction}</td>
-                    <td className="px-4 py-3 text-muted">{part.email}</td>
-                    <td className="px-4 py-3 text-muted whitespace-nowrap">
-                      {part.createdAt.toLocaleString("fr-FR", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <span className="badge badge-neutral">{part._count.votes}</span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ParticipantsTable participants={participants} />
 
           {totalPages > 1 && (
             <div className="mt-4 flex items-center justify-center gap-2">

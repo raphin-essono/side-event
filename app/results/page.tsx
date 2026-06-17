@@ -13,19 +13,26 @@ export default async function ResultsPage() {
     },
   });
 
-  // Calcul du classement
-  const ranked = stands
-    .map((s) => {
-      const count = s.votes.length;
-      const avg =
-        count > 0
-          ? s.votes.reduce((sum, v) => sum + v.noteGlobale, 0) / count
-          : 0;
-      return { ...s, count, avg };
-    })
-    .sort((a, b) => b.avg - a.avg || b.count - a.count);
+  // Calcul du classement — équité par normalisation sur le maximum de votants.
+  // Score d'un stand = somme de ses notes / nombre max de votants toutes stands confondus.
+  // Ex : stand A (3 votes : 4+4+4=12), stand B (2 votes : 5+5=10), max=3
+  //   → score A = 12/3 = 4.00  |  score B = 10/3 = 3.33
+  const withCounts = stands.map((s) => ({
+    ...s,
+    count: s.votes.length,
+    sum: s.votes.reduce((acc, v) => acc + v.noteGlobale, 0),
+  }));
 
-  const maxAvg = ranked[0]?.avg ?? 1;
+  const maxVoters = Math.max(...withCounts.map((s) => s.count), 1);
+
+  const ranked = withCounts
+    .map((s) => ({
+      ...s,
+      score: Math.round((s.sum / maxVoters) * 100) / 100,
+    }))
+    .sort((a, b) => b.score - a.score || b.count - a.count);
+
+  const maxScore = ranked[0]?.score ?? 1;
   const totalVotes = ranked.reduce((s, r) => s + r.count, 0);
   const votesStarted = totalVotes > 0;
 
@@ -119,12 +126,12 @@ export default async function ResultsPage() {
                     {s.count} vote{s.count !== 1 ? "s" : ""}
                   </span>
                 </div>
-                {/* Barre de score */}
+                {/* Barre de score normalisé */}
                 <div className="mt-2 h-2 rounded-full bg-border overflow-hidden">
                   <div
                     className="h-full rounded-full transition-all duration-700"
                     style={{
-                      width: maxAvg > 0 ? `${(s.avg / maxAvg) * 100}%` : "0%",
+                      width: maxScore > 0 ? `${(s.score / maxScore) * 100}%` : "0%",
                       background: "var(--gradient-hero)",
                     }}
                   />
@@ -134,13 +141,13 @@ export default async function ResultsPage() {
                     <span
                       key={n}
                       className="text-sm leading-none"
-                      style={{ color: n <= Math.round(s.avg) ? "var(--accent)" : "var(--border)" }}
+                      style={{ color: n <= Math.round(s.score) ? "var(--accent)" : "var(--border)" }}
                     >
                       ★
                     </span>
                   ))}
                   <span className="text-xs text-muted ml-1">
-                    {s.avg > 0 ? s.avg.toFixed(1) : "—"} / 5
+                    {s.score > 0 ? s.score.toFixed(2) : "—"} / 5
                   </span>
                 </div>
               </div>
@@ -161,7 +168,7 @@ type RankedStand = {
   color: string | null;
   initials: string | null;
   count: number;
-  avg: number;
+  score: number;
 };
 
 function PodiumCard({ stand: s, position }: { stand: RankedStand; position: 1 | 2 | 3 }) {
@@ -178,7 +185,7 @@ function PodiumCard({ stand: s, position }: { stand: RankedStand; position: 1 | 
         {s.initials ?? s.nom.slice(0, 2).toUpperCase()}
       </span>
       <span className="text-xs font-semibold text-center leading-tight line-clamp-2">{s.nom}</span>
-      <span className="text-xs text-muted">{s.avg.toFixed(1)} ★</span>
+      <span className="text-xs text-muted">{s.score.toFixed(2)} ★</span>
       {/* Socle */}
       <div
         className={`w-full ${heights[position]} rounded-t-lg`}

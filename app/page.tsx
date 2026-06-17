@@ -2,7 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import ParticipantIdForm from "./components/ParticipantIdForm";
 
 export default function Home() {
   return (
@@ -55,7 +54,7 @@ export default function Home() {
         <span className="overline">Accès rapide</span>
         <h2 className="mt-2 text-2xl font-bold">Sélectionnez votre rôle</h2>
 
-        <div className="mt-7 grid gap-5 sm:grid-cols-2 md:grid-cols-3">
+        <div className="mt-7 grid gap-5 sm:grid-cols-2">
           <Link
             href="/host/welcome"
             className="card group p-6 transition hover:-translate-y-0.5 hover:[box-shadow:var(--shadow-lift)]"
@@ -83,15 +82,6 @@ export default function Home() {
               Ouvrir →
             </span>
           </Link>
-
-          <div className="card p-6 sm:col-span-2 md:col-span-1">
-            <span className="overline">Portail · mobile</span>
-            <h3 className="mt-3 text-lg font-semibold">Participant</h3>
-            <p className="mt-1.5 text-sm text-muted">
-              Scannez le QR remis à l&apos;accueil, ou saisissez votre ID.
-            </p>
-            <ParticipantIdForm />
-          </div>
         </div>
       </main>
 

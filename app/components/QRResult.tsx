@@ -3,10 +3,9 @@
 type Props = {
   participant: { id: string; prenom: string; nom: string };
   qrDataUrl: string;
-  loginUrl: string;
 };
 
-export default function QRResult({ participant, qrDataUrl, loginUrl }: Props) {
+export default function QRResult({ participant, qrDataUrl }: Props) {
   return (
     <div className="card p-6 grid gap-4 sm:grid-cols-[auto_1fr] items-center">
       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -25,17 +24,6 @@ export default function QRResult({ participant, qrDataUrl, loginUrl }: Props) {
           Présentez ce QR au participant — il le scanne avec son smartphone pour accéder au
           portail.
         </p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          <a href={loginUrl} target="_blank" rel="noreferrer" className="btn-outline btn text-xs">
-            Ouvrir l&apos;espace participant
-          </a>
-          <button
-            onClick={() => navigator.clipboard.writeText(loginUrl)}
-            className="btn-outline btn text-xs"
-          >
-            Copier le lien
-          </button>
-        </div>
       </div>
     </div>
   );

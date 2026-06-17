@@ -116,7 +116,7 @@ export default function HostSearchPage() {
       )}
 
       {qr && (
-        <QRResult participant={qr.participant} qrDataUrl={qr.qrDataUrl} loginUrl={qr.loginUrl} />
+        <QRResult participant={qr.participant} qrDataUrl={qr.qrDataUrl} />
       )}
 
       <div className="grid gap-2.5">

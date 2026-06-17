@@ -90,7 +90,6 @@ export default function HostRegisterPage() {
         <QRResult
           participant={result.participant}
           qrDataUrl={result.qrDataUrl}
-          loginUrl={result.loginUrl}
         />
       )}
     </div>

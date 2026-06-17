@@ -24,7 +24,7 @@ const QUESTIONS = [
   {
     key: "modele" as const,
     label: "Modèle Économique et Viabilité Financière",
-    hint: "La startup dispose-t-elle d'un modèle économique clair, générateur de revenus, et présente-t-elle des prévisions financières cohérentes avec son niveau de développement ?",
+    hint: "La startup dispose-t-elle d'un modèle économique clair, générateur de revenus ?",
   },
   {
     key: "presentation" as const,
